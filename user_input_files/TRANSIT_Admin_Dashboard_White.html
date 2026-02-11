@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRANSIT Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #19297C;
+            --primary-light: #1F487E;
+            --primary-dark: #0f1a4d;
+            --white: #FFFFFF;
+            --bg: #f5f7fb;
+            --bg-card: #FFFFFF;
+            --bg-sidebar: #19297C;
+            --bg-hover: #f0f3f9;
+            --bg-input: #f5f7fb;
+            --accent: #19297C;
+            --accent-light: #1F487E;
+            --blue: #3b82f6;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+            --text: #1e293b;
+            --text-dim: #64748b;
+            --text-muted: #94a3b8;
+            --text-white: #FFFFFF;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            height: 100vh;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s;
+            box-shadow: 4px 0 15px rgba(25, 41, 124, 0.15);
+        }
+        .sidebar-hdr { padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo { font-size: 1.75rem; font-weight: 900; color: var(--white); letter-spacing: -1px; display: flex; align-items: center; gap: 0.5rem; }
+        .logo-icon { width: 40px; height: 40px; background: var(--white); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.25rem; }
+        .logo-sub { font-size: 0.65rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 2px; margin-top: 0.25rem; }
+        .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+        .nav-sec { padding: 0.75rem 1.5rem 0.5rem; font-size: 0.6rem; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem;
+            color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.85rem; font-weight: 500;
+            cursor: pointer; border-left: 3px solid transparent; transition: all 0.2s; margin: 0.15rem 0;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+        .nav-item.active { background: rgba(255,255,255,0.15); color: var(--white); border-left-color: var(--white); }
+        .nav-item svg { width: 20px; height: 20px; opacity: 0.8; }
+        .nav-item.active svg { opacity: 1; }
+        .nav-badge { margin-left: auto; background: var(--white); color: var(--primary); font-size: 0.6rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 10px; }
+        .sidebar-ftr { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.1); }
+        .user-info { display: flex; align-items: center; gap: 0.75rem; }
+        .user-avatar { width: 42px; height: 42px; background: var(--white); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; color: var(--primary); }
+        .user-name { font-weight: 600; font-size: 0.85rem; color: var(--white); }
+        .user-role { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
+
+        /* Main */
+        .main { flex: 1; margin-left: 260px; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Header */
+        .header {
+            background: var(--white); border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow);
+        }
+        .header-left { display: flex; align-items: center; gap: 1.25rem; }
+        .menu-btn { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 0.5rem; }
+        .page-title { font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+        .breadcrumb { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+        .breadcrumb a { color: var(--text-dim); text-decoration: none; }
+        .breadcrumb a:hover { color: var(--primary); }
+        .header-right { display: flex; align-items: center; gap: 1rem; }
+        .search-box { position: relative; }
+        .search-box input {
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px;
+            padding: 0.7rem 1rem 0.7rem 2.75rem; color: var(--text); font-family: inherit;
+            font-size: 0.85rem; width: 280px; transition: all 0.2s;
+        }
+        .search-box input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(25,41,124,0.1); }
+        .search-box input::placeholder { color: var(--text-muted); }
+        .search-box svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted); }
+        .hdr-btn {
+            width: 42px; height: 42px; background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            color: var(--text-dim); cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .hdr-btn:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+        .hdr-btn svg { width: 20px; height: 20px; }
+        .notif-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; border: 2px solid var(--white); }
+
+        /* Content */
+        .content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Stats */
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card {
+            background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+            padding: 1.5rem; transition: all 0.3s; position: relative; overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--primary-light)); opacity: 0; transition: opacity 0.3s; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .stat-card:hover::before { opacity: 1; }
+        .stat-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .stat-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; }
+        .stat-icon.primary { background: rgba(25,41,124,0.1); color: var(--primary); }
+        .stat-icon.blue { background: rgba(59,130,246,0.1); color: var(--blue); }
+        .stat-icon.green { background: rgba(16,185,129,0.1); color: var(--green); }
+        .stat-icon.purple { background: rgba(139,92,246,0.1); color: var(--purple); }
+        .stat-trend { display: flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 6px; }
+        .stat-trend.up { color: var(--green); background: rgba(16,185,129,0.1); }
+        .stat-trend.down { color: var(--red); background: rgba(239,68,68,0.1); }
+        .stat-val { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 0.25rem; }
+        .stat-lbl { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+        /* Cards */
+        .card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); }
+        .card-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        .card-title { font-size: 1rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.25rem;
+            border-radius: 10px; font-family: inherit; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; border: none;
+        }
+        .btn svg { width: 16px; height: 16px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: var(--white); }
+        .btn-primary:hover { box-shadow: 0 4px 15px rgba(25,41,124,0.35); transform: translateY(-1px); }
+        .btn-secondary { background: var(--bg-input); color: var(--text-dim); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+        .btn-sm { padding: 0.45rem 0.85rem; font-size: 0.75rem; }
+        .btn-icon { width: 32px; height: 32px; padding: 0; justify-content: center; border-radius: 8px; }
+
+        /* Tables */
+        .tbl-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 1rem; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); background: var(--bg); white-space: nowrap; }
+        td { padding: 1rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); color: var(--text-dim); }
+        tr:hover td { background: var(--bg-hover); }
+        .tbl-id { font-family: 'Courier New', monospace; font-size: 0.8rem; color: var(--primary); font-weight: 700; background: rgba(25,41,124,0.08); padding: 0.3rem 0.6rem; border-radius: 6px; }
+        .tbl-user { display: flex; align-items: center; gap: 0.75rem; }
+        .tbl-avatar { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; color: var(--white); }
+        .tbl-name { font-weight: 600; color: var(--text); font-size: 0.85rem; }
+        .tbl-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.85rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+        .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .badge-requested { background: rgba(245,158,11,0.12); color: #b45309; }
+        .badge-requested .badge-dot { background: var(--yellow); }
+        .badge-assigned { background: rgba(59,130,246,0.12); color: #1d4ed8; }
+        .badge-assigned .badge-dot { background: var(--blue); }
+        .badge-enroute { background: rgba(139,92,246,0.12); color: #6d28d9; }
+        .badge-enroute .badge-dot { background: var(--purple); }
+        .badge-delivered { background: rgba(16,185,129,0.12); color: #047857; }
+        .badge-delivered .badge-dot { background: var(--green); }
+        .badge-completed { background: rgba(25,41,124,0.12); color: var(--primary); }
+        .badge-completed .badge-dot { background: var(--primary); }
+        .badge-pending { background: rgba(245,158,11,0.12); color: #b45309; }
+        .badge-pending .badge-dot { background: var(--yellow); }
+        .badge-verified { background: rgba(16,185,129,0.12); color: #047857; }
+        .badge-verified .badge-dot { background: var(--green); }
+        .badge-offline { background: rgba(148,163,184,0.15); color: var(--text-muted); }
+        .badge-offline .badge-dot { background: var(--text-muted); }
+
+        /* Charts */
+        .chart-box { position: relative; height: 300px; }
+        .chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+
+        /* Grid */
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+
+        /* Activity */
+        .activity { max-height: 350px; overflow-y: auto; }
+        .act-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+        .act-item:last-child { border-bottom: none; }
+        .act-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem; }
+        .act-icon.booking { background: rgba(59,130,246,0.1); color: var(--blue); }
+        .act-icon.payment { background: rgba(16,185,129,0.1); color: var(--green); }
+        .act-icon.truck { background: rgba(139,92,246,0.1); color: var(--purple); }
+        .act-icon.alert { background: rgba(239,68,68,0.1); color: var(--red); }
+        .act-content { flex: 1; }
+        .act-title { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+        .act-desc { font-size: 0.8rem; color: var(--text-muted); }
+        .act-time { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; background: var(--bg); padding: 0.25rem 0.5rem; border-radius: 6px; height: fit-content; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 0.5rem; background: var(--bg); padding: 0.35rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--border); }
+        .tab { padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.8rem; font-weight: 600; color: var(--text-dim); cursor: pointer; transition: all 0.2s; border: none; background: none; }
+        .tab:hover { color: var(--primary); }
+        .tab.active { background: var(--primary); color: var(--white); box-shadow: 0 2px 8px rgba(25,41,124,0.25); }
+
+        /* Filter */
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: var(--white); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+        .filter-grp { display: flex; align-items: center; gap: 0.5rem; }
+        .filter-lbl { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
+        .filter-sel {
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px;
+            padding: 0.5rem 2rem 0.5rem 0.75rem; color: var(--text); font-family: inherit;
+            font-size: 0.8rem; cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.6rem center;
+        }
+        .filter-sel:focus { outline: none; border-color: var(--primary); }
+
+        /* Map */
+        .map-box { height: 380px; background: linear-gradient(135deg, #e8f4f8 0%, #f0f5ff 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border: 1px solid var(--border); }
+        .map-dots { position: absolute; width: 100%; height: 100%; }
+        .map-dot { position: absolute; width: 14px; height: 14px; background: var(--primary); border-radius: 50%; animation: pulse 2s infinite; border: 3px solid var(--white); box-shadow: 0 2px 8px rgba(25,41,124,0.3); }
+        .map-dot::after { content: ''; position: absolute; top: -3px; left: -3px; width: 14px; height: 14px; background: var(--primary); border-radius: 50%; animation: ping 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes ping { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.5); opacity: 0; } }
+        .map-label { text-align: center; color: var(--text-dim); z-index: 1; }
+        .map-label svg { width: 60px; height: 60px; margin-bottom: 1rem; color: var(--primary); opacity: 0.6; }
+
+        /* Rate Card */
+        .rate-card { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+        .rate-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .rate-title { font-weight: 700; font-size: 0.95rem; color: var(--text); }
+        .rate-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .rate-item { text-align: center; background: var(--white); padding: 1rem; border-radius: 10px; border: 1px solid var(--border); }
+        .rate-val { font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+        .rate-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-top: 0.25rem; }
+
+        /* Modal */
+        .modal-bg {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(25,41,124,0.4); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        .modal-bg.active { opacity: 1; visibility: visible; }
+        .modal { background: var(--white); border-radius: 20px; width: 90%; max-width: 550px; max-height: 90vh; overflow: hidden; transform: scale(0.9); transition: transform 0.3s; box-shadow: 0 25px 50px rgba(25,41,124,0.25); }
+        .modal-bg.active .modal { transform: scale(1); }
+        .modal-hdr { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border-bottom: 1px solid var(--border); background: var(--bg); }
+        .modal-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--white); color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 1.1rem; }
+        .modal-close:hover { background: var(--red); color: var(--white); }
+        .modal-body { padding: 1.5rem; max-height: 55vh; overflow-y: auto; }
+        .modal-ftr { display: flex; justify-content: flex-end; gap: 0.75rem; padding: 1.5rem; border-top: 1px solid var(--border); background: var(--bg); }
+
+        /* Forms */
+        .form-grp { margin-bottom: 1.25rem; }
+        .form-lbl { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+        .form-input, .form-sel {
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px;
+            padding: 0.75rem 1rem; color: var(--text); font-family: inherit; font-size: 0.85rem; transition: all 0.2s;
+        }
+        .form-input:focus, .form-sel:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(25,41,124,0.1); }
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+
+        /* Pagination */
+        .pag { display: flex; align-items: center; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+        .pag-info { font-size: 0.8rem; color: var(--text-muted); }
+        .pag-btns { display: flex; gap: 0.4rem; }
+        .pag-btn {
+            width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+            background: var(--white); color: var(--text-dim); font-family: inherit;
+            font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .pag-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .pag-btn.active { background: var(--primary); border-color: var(--primary); color: var(--white); }
+        .pag-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Toast */
+        .toast-box { position: fixed; bottom: 2rem; right: 2rem; z-index: 2000; display: flex; flex-direction: column; gap: 0.75rem; }
+        .toast {
+            background: var(--white); border: 1px solid var(--border); border-radius: 14px;
+            padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+            box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease; min-width: 320px;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .toast-icon.success { background: rgba(16,185,129,0.1); color: var(--green); }
+        .toast-icon.error { background: rgba(239,68,68,0.1); color: var(--red); }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 600; font-size: 0.85rem; color: var(--text); }
+        .toast-msg { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Quick Stats Mini */
+        .quick-stat { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: var(--bg); border-radius: 8px; }
+        .quick-stat-val { font-weight: 700; font-size: 0.9rem; color: var(--primary); }
+        .quick-stat-lbl { font-size: 0.7rem; color: var(--text-muted); }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .chart-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 1024px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .rate-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .menu-btn { display: block; }
+            .search-box input { width: 180px; }
+            .hdr-btn.hide-mob { display: none; }
+            .stats { grid-template-columns: 1fr 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .content { padding: 1.25rem; }
+        }
+        @media (max-width: 480px) {
+            .stats { grid-template-columns: 1fr; }
+            .header { padding: 1rem; }
+            .search-box { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-hdr">
+            <div class="logo"><div class="logo-icon">🚛</div>TRANSIT</div>
+            <div class="logo-sub">Admin Dashboard</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-sec">Main</div>
+            <a class="nav-item active" data-page="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                Dashboard
+            </a>
+            <a class="nav-item" data-page="bookings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                Bookings<span class="nav-badge">24</span>
+            </a>
+            <a class="nav-item" data-page="fleet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 01-2 2h-1M6 19a2 2 0 100-4 2 2 0 000 4zm12 0a2 2 0 100-4 2 2 0 000 4z"/></svg>
+                Fleet
+            </a>
+            <a class="nav-item" data-page="tracking">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 018 8c0 5.4-8 12-8 12S4 15.4 4 10a8 8 0 018-8z"/></svg>
+                Live Tracking
+            </a>
+            <div class="nav-sec">Finance</div>
+            <a class="nav-item" data-page="payments">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+                Payments
+            </a>
+            <a class="nav-item" data-page="payouts">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20m5-17H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                Payouts
+            </a>
+            <div class="nav-sec">Settings</div>
+            <a class="nav-item" data-page="rates">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                Rate Cards
+            </a>
+            <a class="nav-item" data-page="users">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"/></svg>
+                Users
+            </a>
+            <a class="nav-item" data-page="reports">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6m-4 5H8m8 4H8m2-8H8"/></svg>
+                Reports
+            </a>
+        </nav>
+        <div class="sidebar-ftr">
+            <div class="user-info">
+                <div class="user-avatar">JM</div>
+                <div><div class="user-name">John Mwamba</div><div class="user-role">Super Admin</div></div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-btn" onclick="toggleSidebar()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                </button>
+                <div>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                    <div class="breadcrumb"><a href="#">Home</a><span>/</span><span id="breadcrumb">Overview</span></div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    <input type="text" placeholder="Search bookings, trucks...">
+                </div>
+                <button class="hdr-btn hide-mob">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9m-4.27 13a2 2 0 01-3.46 0"/></svg>
+                    <span class="notif-dot"></span>
+                </button>
+                <button class="hdr-btn hide-mob">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Dashboard -->
+            <div class="page active" id="page-dashboard">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-hdr"><div class="stat-icon primary">📦</div><div class="stat-trend up">↑ 12%</div></div>
+                        <div class="stat-val">1,284</div><div class="stat-lbl">Total Bookings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-hdr"><div class="stat-icon blue">🚛</div><div class="stat-trend up">↑ 8%</div></div>
+                        <div class="stat-val">156</div><div class="stat-lbl">Active Trucks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-hdr"><div class="stat-icon green">💰</div><div class="stat-trend up">↑ 23%</div></div>
+                        <div class="stat-val">45.2M</div><div class="stat-lbl">Revenue (TZS)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-hdr"><div class="stat-icon purple">⭐</div><div class="stat-trend down">↓ 2%</div></div>
+                        <div class="stat-val">4.7</div><div class="stat-lbl">Avg Rating</div>
+                    </div>
+                </div>
+                <div class="chart-row">
+                    <div class="card">
+                        <div class="card-hdr"><h3 class="card-title">📈 Revenue Overview</h3><button class="btn btn-primary btn-sm">Monthly</button></div>
+                        <div class="chart-box"><canvas id="revenueChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-hdr"><h3 class="card-title">📊 Booking Status</h3></div>
+                        <div class="chart-box"><canvas id="statusChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-hdr"><h3 class="card-title">⏰ Recent Activity</h3><button class="btn btn-secondary btn-sm">View All</button></div>
+                        <div class="activity">
+                            <div class="act-item"><div class="act-icon booking">📦</div><div class="act-content"><div class="act-title">New booking created</div><div class="act-desc">TRN-240130-001 • Dar es Salaam → Arusha</div></div><div class="act-time">2m ago</div></div>
+                            <div class="act-item"><div class="act-icon payment">💳</div><div class="act-content"><div class="act-title">Payment received</div><div class="act-desc">TZS 850,000 via M-Pesa</div></div><div class="act-time">15m ago</div></div>
+                            <div class="act-item"><div class="act-icon truck">🚛</div><div class="act-content"><div class="act-title">Truck verified</div><div class="act-desc">T 456 DEF • Fuso • 8 ton capacity</div></div><div class="act-time">1h ago</div></div>
+                            <div class="act-item"><div class="act-icon booking">✅</div><div class="act-content"><div class="act-title">Delivery completed</div><div class="act-desc">TRN-240129-015 • POD submitted</div></div><div class="act-time">2h ago</div></div>
+                            <div class="act-item"><div class="act-icon alert">⚠️</div><div class="act-content"><div class="act-title">Delayed shipment alert</div><div class="act-desc">TRN-240129-008 • ETA exceeded by 2 hours</div></div><div class="act-time">3h ago</div></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-hdr"><h3 class="card-title">🔔 Pending Actions</h3><span class="badge badge-requested"><span class="badge-dot"></span>12 items</span></div>
+                        <div class="activity">
+                            <div class="act-item"><div class="act-icon booking">📋</div><div class="act-content"><div class="act-title">5 bookings awaiting assignment</div><div class="act-desc">Urgent: 2 scheduled for today</div></div><button class="btn btn-primary btn-sm" onclick="navigateTo('bookings')">Assign</button></div>
+                            <div class="act-item"><div class="act-icon truck">🔍</div><div class="act-content"><div class="act-title">3 trucks pending verification</div><div class="act-desc">Documents ready for review</div></div><button class="btn btn-secondary btn-sm" onclick="navigateTo('fleet')">Review</button></div>
+                            <div class="act-item"><div class="act-icon payment">💸</div><div class="act-content"><div class="act-title">4 payouts ready to process</div><div class="act-desc">Total: TZS 2,450,000</div></div><button class="btn btn-secondary btn-sm" onclick="navigateTo('payouts')">Process</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings -->
+            <div class="page" id="page-bookings">
+                <div class="filter-bar">
+                    <div class="filter-grp"><span class="filter-lbl">Status:</span><select class="filter-sel"><option>All Status</option><option>Requested</option><option>Assigned</option><option>En Route</option><option>Delivered</option><option>Completed</option></select></div>
+                    <div class="filter-grp"><span class="filter-lbl">Cargo Type:</span><select class="filter-sel"><option>All Types</option><option>General</option><option>Perishable</option><option>Fragile</option><option>High Value</option></select></div>
+                    <div class="filter-grp"><span class="filter-lbl">Date:</span><input type="date" class="filter-sel" style="width:150px;"></div>
+                    <div style="margin-left:auto;"><button class="btn btn-primary" onclick="openModal('assignModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>New Booking</button></div>
+                </div>
+                <div class="card">
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead><tr><th>Booking ID</th><th>Customer</th><th>Route</th><th>Cargo</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="tbl-id">TRN-240130-001</span></td><td><div class="tbl-user"><div class="tbl-avatar">AM</div><div><div class="tbl-name">Anna Mushi</div><div class="tbl-sub">+255 712 345 678</div></div></div></td><td><div class="tbl-name">Dar es Salaam → Arusha</div><div class="tbl-sub">635 km</div></td><td><div class="tbl-name">General</div><div class="tbl-sub">5,000 kg</div></td><td><strong style="color:var(--green)">TZS 850,000</strong></td><td><span class="badge badge-requested"><span class="badge-dot"></span>Requested</span></td><td>Jan 30, 2025</td><td><button class="btn btn-primary btn-sm" onclick="openModal('assignModal')">Assign</button></td></tr>
+                                <tr><td><span class="tbl-id">TRN-240130-002</span></td><td><div class="tbl-user"><div class="tbl-avatar">JK</div><div><div class="tbl-name">James Kimaro</div><div class="tbl-sub">+255 754 987 654</div></div></div></td><td><div class="tbl-name">Mwanza → Dar es Salaam</div><div class="tbl-sub">1,120 km</div></td><td><div class="tbl-name">Perishable</div><div class="tbl-sub">3,500 kg</div></td><td><strong style="color:var(--green)">TZS 1,450,000</strong></td><td><span class="badge badge-assigned"><span class="badge-dot"></span>Assigned</span></td><td>Jan 30, 2025</td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+                                <tr><td><span class="tbl-id">TRN-240129-015</span></td><td><div class="tbl-user"><div class="tbl-avatar">SM</div><div><div class="tbl-name">Sarah Mbeki</div><div class="tbl-sub">+255 787 123 456</div></div></div></td><td><div class="tbl-name">Dodoma → Dar es Salaam</div><div class="tbl-sub">456 km</div></td><td><div class="tbl-name">High Value</div><div class="tbl-sub">800 kg</div></td><td><strong style="color:var(--green)">TZS 720,000</strong></td><td><span class="badge badge-enroute"><span class="badge-dot"></span>En Route</span></td><td>Jan 29, 2025</td><td><button class="btn btn-secondary btn-sm" onclick="navigateTo('tracking')">Track</button></td></tr>
+                                <tr><td><span class="tbl-id">TRN-240129-014</span></td><td><div class="tbl-user"><div class="tbl-avatar">PL</div><div><div class="tbl-name">Peter Lema</div><div class="tbl-sub">+255 765 456 789</div></div></div></td><td><div class="tbl-name">Tanga → Moshi</div><div class="tbl-sub">298 km</div></td><td><div class="tbl-name">Fragile</div><div class="tbl-sub">1,200 kg</div></td><td><strong style="color:var(--green)">TZS 485,000</strong></td><td><span class="badge badge-delivered"><span class="badge-dot"></span>Delivered</span></td><td>Jan 29, 2025</td><td><button class="btn btn-secondary btn-sm">POD</button></td></tr>
+                                <tr><td><span class="tbl-id">TRN-240128-022</span></td><td><div class="tbl-user"><div class="tbl-avatar">MN</div><div><div class="tbl-name">Mary Ngowi</div><div class="tbl-sub">+255 712 789 012</div></div></div></td><td><div class="tbl-name">Dar es Salaam → Iringa</div><div class="tbl-sub">502 km</div></td><td><div class="tbl-name">General</div><div class="tbl-sub">7,500 kg</div></td><td><strong style="color:var(--green)">TZS 680,000</strong></td><td><span class="badge badge-completed"><span class="badge-dot"></span>Completed</span></td><td>Jan 28, 2025</td><td><button class="btn btn-secondary btn-sm">Receipt</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pag"><div class="pag-info">Showing 1-5 of 24 bookings</div><div class="pag-btns"><button class="pag-btn" disabled>‹</button><button class="pag-btn active">1</button><button class="pag-btn">2</button><button class="pag-btn">3</button><button class="pag-btn">4</button><button class="pag-btn">5</button><button class="pag-btn">›</button></div></div>
+                </div>
+            </div>
+
+            <!-- Fleet -->
+            <div class="page" id="page-fleet">
+                <div class="stats">
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon blue">🚛</div></div><div class="stat-val">156</div><div class="stat-lbl">Total Trucks</div></div>
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon green">✓</div></div><div class="stat-val">142</div><div class="stat-lbl">Verified</div></div>
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon primary">📍</div></div><div class="stat-val">68</div><div class="stat-lbl">Available Now</div></div>
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon purple">🔄</div></div><div class="stat-val">45</div><div class="stat-lbl">En Route</div></div>
+                </div>
+                <div class="tabs"><button class="tab active">All Trucks</button><button class="tab">Pending Verification (3)</button><button class="tab">Available</button><button class="tab">En Route</button></div>
+                <div class="card">
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead><tr><th>Plate Number</th><th>Owner / Driver</th><th>Type</th><th>Capacity</th><th>Status</th><th>Availability</th><th>Rating</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="tbl-id">T 123 ABC</span></td><td><div class="tbl-user"><div class="tbl-avatar">DM</div><div><div class="tbl-name">David Mwita</div><div class="tbl-sub">+255 755 111 222</div></div></div></td><td>Fuso</td><td>8,000 kg</td><td><span class="badge badge-verified"><span class="badge-dot"></span>Verified</span></td><td><span class="badge badge-verified"><span class="badge-dot"></span>Available</span></td><td>⭐ 4.8</td><td><button class="btn btn-secondary btn-sm btn-icon">👁️</button><button class="btn btn-secondary btn-sm btn-icon">✏️</button></td></tr>
+                                <tr><td><span class="tbl-id">T 456 DEF</span></td><td><div class="tbl-user"><div class="tbl-avatar">EK</div><div><div class="tbl-name">Emmanuel Kato</div><div class="tbl-sub">+255 767 333 444</div></div></div></td><td>Semi Trailer</td><td>20,000 kg</td><td><span class="badge badge-pending"><span class="badge-dot"></span>Pending</span></td><td><span class="badge badge-offline"><span class="badge-dot"></span>Offline</span></td><td>—</td><td><button class="btn btn-primary btn-sm" onclick="verifyTruck()">Verify</button></td></tr>
+                                <tr><td><span class="tbl-id">T 789 GHI</span></td><td><div class="tbl-user"><div class="tbl-avatar">JN</div><div><div class="tbl-name">Joseph Ndalu</div><div class="tbl-sub">+255 712 555 666</div></div></div></td><td>Trailer</td><td>30,000 kg</td><td><span class="badge badge-verified"><span class="badge-dot"></span>Verified</span></td><td><span class="badge badge-enroute"><span class="badge-dot"></span>En Route</span></td><td>⭐ 4.6</td><td><button class="btn btn-secondary btn-sm btn-icon">👁️</button><button class="btn btn-secondary btn-sm btn-icon">📍</button></td></tr>
+                                <tr><td><span class="tbl-id">T 321 JKL</span></td><td><div class="tbl-user"><div class="tbl-avatar">FK</div><div><div class="tbl-name">Francis Kasongo</div><div class="tbl-sub">+255 784 777 888</div></div></div></td><td>Pickup</td><td>3,000 kg</td><td><span class="badge badge-verified"><span class="badge-dot"></span>Verified</span></td><td><span class="badge badge-verified"><span class="badge-dot"></span>Available</span></td><td>⭐ 4.9</td><td><button class="btn btn-secondary btn-sm btn-icon">👁️</button><button class="btn btn-secondary btn-sm btn-icon">✏️</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tracking -->
+            <div class="page" id="page-tracking">
+                <div class="grid-2">
+                    <div class="card" style="height:480px;">
+                        <div class="card-hdr"><h3 class="card-title">🗺️ Live Fleet Map</h3><button class="btn btn-secondary btn-sm">⟳ Refresh</button></div>
+                        <div class="map-box">
+                            <div class="map-dots">
+                                <div class="map-dot" style="top:28%;left:22%;"></div>
+                                <div class="map-dot" style="top:42%;left:58%;"></div>
+                                <div class="map-dot" style="top:68%;left:38%;"></div>
+                                <div class="map-dot" style="top:52%;left:72%;"></div>
+                                <div class="map-dot" style="top:22%;left:48%;"></div>
+                            </div>
+                            <div class="map-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 018 8c0 5.4-8 12-8 12S4 15.4 4 10a8 8 0 018-8z"/></svg>
+                                <div style="font-weight:600;font-size:1rem;">Tanzania Fleet Overview</div>
+                                <div style="font-size:0.85rem;margin-top:0.5rem;">5 trucks currently active</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-hdr"><h3 class="card-title">🚛 Active Trips</h3></div>
+                        <div class="activity" style="max-height:400px;">
+                            <div class="act-item" style="cursor:pointer;border-radius:10px;padding:1rem;margin-bottom:0.5rem;background:rgba(25,41,124,0.05);border:1px solid var(--border);">
+                                <div class="act-icon" style="background:var(--primary);color:var(--white);">🚛</div>
+                                <div class="act-content">
+                                    <div class="act-title">TRN-240129-015</div>
+                                    <div class="act-desc">Dodoma → Dar es Salaam</div>
+                                    <div style="display:flex;gap:0.75rem;margin-top:0.5rem;align-items:center;">
+                                        <span class="badge badge-enroute"><span class="badge-dot"></span>En Route</span>
+                                        <span style="font-size:0.75rem;color:var(--text-muted);">ETA: 3h 45m</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="act-item" style="cursor:pointer;border-radius:10px;padding:1rem;margin-bottom:0.5rem;background:var(--bg);border:1px solid var(--border);">
+                                <div class="act-icon booking">🚛</div>
+                                <div class="act-content">
+                                    <div class="act-title">TRN-240130-002</div>
+                                    <div class="act-desc">Mwanza → Dar es Salaam</div>
+                                    <div style="display:flex;gap:0.75rem;margin-top:0.5rem;align-items:center;">
+                                        <span class="badge badge-assigned"><span class="badge-dot"></span>Assigned</span>
+                                        <span style="font-size:0.75rem;color:var(--text-muted);">Pickup: 2:00 PM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="act-item" style="cursor:pointer;border-radius:10px;padding:1rem;margin-bottom:0.5rem;background:var(--bg);border:1px solid var(--border);">
+                                <div class="act-icon booking">🚛</div>
+                                <div class="act-content">
+                                    <div class="act-title">TRN-240130-005</div>
+                                    <div class="act-desc">Arusha → Moshi</div>
+                                    <div style="display:flex;gap:0.75rem;margin-top:0.5rem;align-items:center;">
+                                        <span class="badge badge-enroute"><span class="badge-dot"></span>En Route</span>
+                                        <span style="font-size:0.75rem;color:var(--text-muted);">ETA: 45 min</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="act-item" style="cursor:pointer;border-radius:10px;padding:1rem;background:var(--bg);border:1px solid var(--border);">
+                                <div class="act-icon booking">🚛</div>
+                                <div class="act-content">
+                                    <div class="act-title">TRN-240130-008</div>
+                                    <div class="act-desc">Dar es Salaam → Morogoro</div>
+                                    <div style="display:flex;gap:0.75rem;margin-top:0.5rem;align-items:center;">
+                                        <span class="badge badge-enroute"><span class="badge-dot"></span>En Route</span>
+                                        <span style="font-size:0.75rem;color:var(--text-muted);">ETA: 1h 20m</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments -->
+            <div class="page" id="page-payments">
+                <div class="stats">
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon green">💰</div></div><div class="stat-val">45.2M</div><div class="stat-lbl">Total Collected (TZS)</div></div>
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon blue">🔒</div></div><div class="stat-val">8.5M</div><div class="stat-lbl">In Escrow (TZS)</div></div>
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon primary">📊</div></div><div class="stat-val">6.78M</div><div class="stat-lbl">Platform Revenue</div></div>
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon purple">📱</div></div><div class="stat-val">78%</div><div class="stat-lbl">Mobile Money</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-hdr"><h3 class="card-title">💳 Recent Transactions</h3><button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m4-5l5 5 5-5m-5 5V3"/></svg>Export CSV</button></div>
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead><tr><th>Transaction ID</th><th>Booking</th><th>Customer</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="tbl-id">TXN-20250130-001</span></td><td>TRN-240130-001</td><td>Anna Mushi</td><td><strong style="color:var(--green)">TZS 850,000</strong></td><td>M-Pesa</td><td><span class="badge badge-completed"><span class="badge-dot"></span>Completed</span></td><td>Jan 30, 10:30 AM</td></tr>
+                                <tr><td><span class="tbl-id">TXN-20250130-002</span></td><td>TRN-240130-002</td><td>James Kimaro</td><td><strong style="color:var(--green)">TZS 1,450,000</strong></td><td>Tigo Pesa</td><td><span class="badge badge-completed"><span class="badge-dot"></span>Completed</span></td><td>Jan 30, 09:15 AM</td></tr>
+                                <tr><td><span class="tbl-id">TXN-20250129-015</span></td><td>TRN-240129-015</td><td>Sarah Mbeki</td><td><strong style="color:var(--green)">TZS 720,000</strong></td><td>Bank Transfer</td><td><span class="badge badge-assigned"><span class="badge-dot"></span>In Escrow</span></td><td>Jan 29, 04:45 PM</td></tr>
+                                <tr><td><span class="tbl-id">TXN-20250129-014</span></td><td>TRN-240129-014</td><td>Peter Lema</td><td><strong style="color:var(--green)">TZS 485,000</strong></td><td>M-Pesa</td><td><span class="badge badge-completed"><span class="badge-dot"></span>Completed</span></td><td>Jan 29, 02:20 PM</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payouts -->
+            <div class="page" id="page-payouts">
+                <div class="stats">
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon green">💸</div></div><div class="stat-val">38.4M</div><div class="stat-lbl">Total Paid Out (TZS)</div></div>
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon primary">⏳</div></div><div class="stat-val">2.45M</div><div class="stat-lbl">Pending Payouts</div></div>
+                    <div class="stat-card"><div class="stat-hdr"><div class="stat-icon blue">👥</div></div><div class="stat-val">89</div><div class="stat-lbl">Active Drivers</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-hdr"><h3 class="card-title">💸 Pending Payouts</h3><button class="btn btn-primary" onclick="processAllPayouts()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>Process All</button></div>
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead><tr><th>Driver</th><th>Booking</th><th>Amount</th><th>Method</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="tbl-user"><div class="tbl-avatar">DM</div><div><div class="tbl-name">David Mwita</div><div class="tbl-sub">+255 755 111 222</div></div></div></td><td>TRN-240128-022</td><td><strong style="color:var(--green)">TZS 578,000</strong></td><td>M-Pesa</td><td><span class="badge badge-pending"><span class="badge-dot"></span>Ready</span></td><td><button class="btn btn-primary btn-sm" onclick="processPayout('David Mwita', 578000)">Pay Now</button></td></tr>
+                                <tr><td><div class="tbl-user"><div class="tbl-avatar">JN</div><div><div class="tbl-name">Joseph Ndalu</div><div class="tbl-sub">+255 712 555 666</div></div></div></td><td>TRN-240129-014</td><td><strong style="color:var(--green)">TZS 412,250</strong></td><td>Tigo Pesa</td><td><span class="badge badge-pending"><span class="badge-dot"></span>Ready</span></td><td><button class="btn btn-primary btn-sm" onclick="processPayout('Joseph Ndalu', 412250)">Pay Now</button></td></tr>
+                                <tr><td><div class="tbl-user"><div class="tbl-avatar">FK</div><div><div class="tbl-name">Francis Kasongo</div><div class="tbl-sub">+255 784 777 888</div></div></div></td><td>TRN-240129-018</td><td><strong style="color:var(--green)">TZS 325,500</strong></td><td>M-Pesa</td><td><span class="badge badge-pending"><span class="badge-dot"></span>Ready</span></td><td><button class="btn btn-primary btn-sm" onclick="processPayout('Francis Kasongo', 325500)">Pay Now</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rate Cards -->
+            <div class="page" id="page-rates">
+                <div class="card">
+                    <div class="card-hdr"><h3 class="card-title">💵 Rate Card Configuration</h3><button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M12 5v14m-7-7h14"/></svg>Add Rate Card</button></div>
+                    <div class="rate-card">
+                        <div class="rate-hdr"><div class="rate-title">🚛 Fuso Truck — General Cargo</div><span class="badge badge-verified"><span class="badge-dot"></span>Active</span></div>
+                        <div class="rate-grid"><div class="rate-item"><div class="rate-val">50,000</div><div class="rate-lbl">Base Rate (TZS)</div></div><div class="rate-item"><div class="rate-val">1,000</div><div class="rate-lbl">Per KM (TZS)</div></div><div class="rate-item"><div class="rate-val">20</div><div class="rate-lbl">Per KG (TZS)</div></div><div class="rate-item"><div class="rate-val">15%</div><div class="rate-lbl">Commission</div></div></div>
+                    </div>
+                    <div class="rate-card">
+                        <div class="rate-hdr"><div class="rate-title">🚚 Semi Trailer — Perishable Cargo</div><span class="badge badge-verified"><span class="badge-dot"></span>Active</span></div>
+                        <div class="rate-grid"><div class="rate-item"><div class="rate-val">75,000</div><div class="rate-lbl">Base Rate (TZS)</div></div><div class="rate-item"><div class="rate-val">1,200</div><div class="rate-lbl">Per KM (TZS)</div></div><div class="rate-item"><div class="rate-val">25</div><div class="rate-lbl">Per KG (TZS)</div></div><div class="rate-item"><div class="rate-val">15%</div><div class="rate-lbl">Commission</div></div></div>
+                    </div>
+                    <div class="rate-card">
+                        <div class="rate-hdr"><div class="rate-title">🚛 Trailer — High Value Cargo</div><span class="badge badge-verified"><span class="badge-dot"></span>Active</span></div>
+                        <div class="rate-grid"><div class="rate-item"><div class="rate-val">100,000</div><div class="rate-lbl">Base Rate (TZS)</div></div><div class="rate-item"><div class="rate-val">1,500</div><div class="rate-lbl">Per KM (TZS)</div></div><div class="rate-item"><div class="rate-val">30</div><div class="rate-lbl">Per KG (TZS)</div></div><div class="rate-item"><div class="rate-val">18%</div><div class="rate-lbl">Commission</div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users -->
+            <div class="page" id="page-users">
+                <div class="tabs"><button class="tab active">All Users (409)</button><button class="tab">Cargo Owners (245)</button><button class="tab">Drivers (156)</button><button class="tab">Admins (8)</button></div>
+                <div class="card">
+                    <div class="card-hdr"><h3 class="card-title">👥 User Management</h3><button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M12 5v14m-7-7h14"/></svg>Add User</button></div>
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead><tr><th>User</th><th>Phone</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="tbl-user"><div class="tbl-avatar">AM</div><div><div class="tbl-name">Anna Mushi</div><div class="tbl-sub">anna@example.com</div></div></div></td><td>+255 712 345 678</td><td><span class="badge badge-assigned"><span class="badge-dot"></span>Cargo Owner</span></td><td><span class="badge badge-verified"><span class="badge-dot"></span>Active</span></td><td>Dec 15, 2024</td><td><button class="btn btn-secondary btn-sm btn-icon">👁️</button><button class="btn btn-secondary btn-sm btn-icon">✏️</button></td></tr>
+                                <tr><td><div class="tbl-user"><div class="tbl-avatar">DM</div><div><div class="tbl-name">David Mwita</div><div class="tbl-sub">david@example.com</div></div></div></td><td>+255 755 111 222</td><td><span class="badge badge-enroute"><span class="badge-dot"></span>Driver</span></td><td><span class="badge badge-verified"><span class="badge-dot"></span>Active</span></td><td>Nov 20, 2024</td><td><button class="btn btn-secondary btn-sm btn-icon">👁️</button><button class="btn btn-secondary btn-sm btn-icon">✏️</button></td></tr>
+                                <tr><td><div class="tbl-user"><div class="tbl-avatar">JM</div><div><div class="tbl-name">John Mwamba</div><div class="tbl-sub">john@transit.co.tz</div></div></div></td><td>+255 789 000 111</td><td><span class="badge badge-completed"><span class="badge-dot"></span>Super Admin</span></td><td><span class="badge badge-verified"><span class="badge-dot"></span>Active</span></td><td>Oct 01, 2024</td><td><button class="btn btn-secondary btn-sm btn-icon">👁️</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports -->
+            <div class="page" id="page-reports">
+                <div class="grid-3">
+                    <div class="card" style="cursor:pointer;text-align:center;padding:2.5rem 1.5rem;" onclick="generateReport('operational')">
+                        <div style="width:70px;height:70px;background:rgba(25,41,124,0.1);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;">📊</div>
+                        <h3 style="margin-bottom:0.5rem;">Operational Report</h3>
+                        <p style="color:var(--text-muted);font-size:0.85rem;">Trips, delivery times, performance metrics</p>
+                    </div>
+                    <div class="card" style="cursor:pointer;text-align:center;padding:2.5rem 1.5rem;" onclick="generateReport('financial')">
+                        <div style="width:70px;height:70px;background:rgba(16,185,129,0.1);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;">💰</div>
+                        <h3 style="margin-bottom:0.5rem;">Financial Report</h3>
+                        <p style="color:var(--text-muted);font-size:0.85rem;">Revenue, commissions, payouts summary</p>
+                    </div>
+                    <div class="card" style="cursor:pointer;text-align:center;padding:2.5rem 1.5rem;" onclick="generateReport('fleet')">
+                        <div style="width:70px;height:70px;background:rgba(139,92,246,0.1);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;">🚛</div>
+                        <h3 style="margin-bottom:0.5rem;">Fleet Report</h3>
+                        <p style="color:var(--text-muted);font-size:0.85rem;">Utilization, ratings, compliance status</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-bg" id="assignModal">
+        <div class="modal">
+            <div class="modal-hdr"><h3 class="modal-title">🚛 Assign Truck to Booking</h3><button class="modal-close" onclick="closeModal('assignModal')">✕</button></div>
+            <div class="modal-body">
+                <div class="form-grp"><label class="form-lbl">Booking Details</label><input class="form-input" value="TRN-240130-001 • Dar es Salaam → Arusha • 5,000 kg" readonly style="background:var(--bg);"></div>
+                <div class="form-grp"><label class="form-lbl">Select Available Truck</label><select class="form-sel"><option value="">Choose a truck...</option><option>T 123 ABC — Fuso (8,000 kg) — David Mwita ⭐4.8</option><option>T 321 JKL — Pickup (3,000 kg) — Francis Kasongo ⭐4.9</option><option>T 789 GHI — Trailer (30,000 kg) — Joseph Ndalu ⭐4.6</option></select></div>
+                <div class="form-row">
+                    <div class="form-grp"><label class="form-lbl">Pickup Date</label><input type="date" class="form-input" value="2025-01-30"></div>
+                    <div class="form-grp"><label class="form-lbl">Pickup Time</label><input type="time" class="form-input" value="08:00"></div>
+                </div>
+                <div class="form-grp"><label class="form-lbl">Assignment Notes</label><textarea class="form-input" rows="3" placeholder="Add any special instructions for the driver..."></textarea></div>
+            </div>
+            <div class="modal-ftr"><button class="btn btn-secondary" onclick="closeModal('assignModal')">Cancel</button><button class="btn btn-primary" onclick="assignTruck()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>Assign Truck</button></div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-box" id="toastBox"></div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const page = item.dataset.page;
+                if (page) navigateTo(page);
+            });
+        });
+
+        function navigateTo(page) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
+            document.getElementById(`page-${page}`)?.classList.add('active');
+            const titles = { dashboard: 'Dashboard', bookings: 'Bookings Management', fleet: 'Fleet Management', tracking: 'Live Tracking', payments: 'Payments', payouts: 'Driver Payouts', rates: 'Rate Cards', users: 'User Management', reports: 'Reports' };
+            document.getElementById('pageTitle').textContent = titles[page] || page;
+            document.getElementById('breadcrumb').textContent = titles[page] || page;
+            if (window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Modals
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // Toast notifications
+        function showToast(type, title, message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<div class="toast-icon ${type}">${type === 'success' ? '✓' : '✕'}</div><div class="toast-content"><div class="toast-title">${title}</div><div class="toast-msg">${message}</div></div>`;
+            document.getElementById('toastBox').appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Actions
+        function assignTruck() {
+            closeModal('assignModal');
+            showToast('success', 'Truck Assigned Successfully', 'TRN-240130-001 has been assigned to T 123 ABC');
+        }
+
+        function verifyTruck() {
+            showToast('success', 'Truck Verified', 'T 456 DEF has been verified and activated');
+        }
+
+        function processPayout(name, amount) {
+            showToast('success', 'Payout Processed', `TZS ${amount.toLocaleString()} sent to ${name}`);
+        }
+
+        function processAllPayouts() {
+            showToast('success', 'All Payouts Processed', '4 payouts totaling TZS 2,450,000 have been processed');
+        }
+
+        function generateReport(type) {
+            const names = { operational: 'Operational', financial: 'Financial', fleet: 'Fleet' };
+            showToast('success', 'Report Generated', `${names[type]} report is ready for download`);
+        }
+
+        // Charts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Revenue Chart
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Revenue (M TZS)',
+                        data: [28, 32, 35, 38, 42, 45, 48, 52, 55, 58, 62, 68],
+                        borderColor: '#19297C',
+                        backgroundColor: 'rgba(25,41,124,0.08)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#19297C',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#64748b', font: { family: 'Montserrat' } } },
+                        y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#64748b', font: { family: 'Montserrat' } } }
+                    }
+                }
+            });
+
+            // Status Chart
+            new Chart(document.getElementById('statusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'En Route', 'Assigned', 'Requested'],
+                    datasets: [{
+                        data: [65, 20, 10, 5],
+                        backgroundColor: ['#19297C', '#8b5cf6', '#3b82f6', '#f59e0b'],
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#64748b', padding: 20, font: { family: 'Montserrat', size: 12 } } } },
+                    cutout: '72%'
+                }
+            });
+        });
+    </script>
+</body>
+</html>

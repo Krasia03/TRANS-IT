@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRANSIT MVP - Technical Specification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-hover: #1a1a25;
+            --accent: #ff6b35;
+            --accent-light: #ff8c5a;
+            --blue: #4ecdc4;
+            --purple: #7b68ee;
+            --text: #ffffff;
+            --text-dim: #a0a0b0;
+            --text-muted: #6a6a7a;
+            --border: #2a2a3a;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg-dark); color: var(--text); line-height: 1.7; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 2rem;
+            background: radial-gradient(ellipse at 30% 20%, rgba(255,107,53,0.12) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(78,205,196,0.08) 0%, transparent 50%);
+        }
+        .logo {
+            font-size: clamp(3rem, 10vw, 5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c5a 50%, #f7931e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -3px;
+            animation: slideUp 0.8s ease-out;
+        }
+        .tagline {
+            font-size: 1rem;
+            color: var(--text-dim);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin: 0.5rem 0 2rem;
+            animation: slideUp 0.8s ease-out 0.2s backwards;
+        }
+        .hero-desc {
+            max-width: 700px;
+            text-align: center;
+            color: var(--text-dim);
+            margin-bottom: 3rem;
+            animation: slideUp 0.8s ease-out 0.4s backwards;
+        }
+        .stats { display: flex; gap: 3rem; flex-wrap: wrap; justify-content: center; animation: slideUp 0.8s ease-out 0.6s backwards; }
+        .stat { text-align: center; }
+        .stat-val { font-size: 2.5rem; font-weight: 700; color: var(--accent); }
+        .stat-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+        }
+        .nav.visible { transform: translateY(0); }
+        .nav-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+        .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* Sections */
+        .section { max-width: 1400px; margin: 0 auto; padding: 5rem 2rem; }
+        .section-hdr { text-align: center; margin-bottom: 3rem; }
+        .section-num { font-size: 0.75rem; font-weight: 600; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.5rem; }
+        .section-title { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; margin-bottom: 1rem; }
+        .section-sub { color: var(--text-dim); max-width: 600px; margin: 0 auto; }
+        .section-alt { background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card) 50%, var(--bg-dark) 100%); }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-3px); }
+        .card-hdr { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .card-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .card-title { font-size: 1.1rem; font-weight: 700; }
+
+        /* Grids */
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+
+        /* Architecture */
+        .arch-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; overflow-x: auto; }
+        .arch-layer { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .arch-label { width: 100px; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .arch-box {
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .arch-box.client { background: linear-gradient(135deg, var(--blue) 0%, #44a08d 100%); }
+        .arch-box.api { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%); }
+        .arch-box.service { background: linear-gradient(135deg, var(--purple) 0%, #6a5acd 100%); }
+        .arch-box.data { background: #1a2634; border: 2px solid var(--blue); }
+        .arch-box.external { background: transparent; border: 2px dashed var(--accent); color: var(--accent); }
+        .arch-connector { width: 100%; height: 1px; background: var(--border); margin: 0.5rem 0; }
+
+        /* Tables */
+        .tbl-wrap { overflow-x: auto; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: var(--accent); color: white; padding: 0.75rem; text-align: left; font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; }
+        td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-dim); }
+        tr:hover td { background: var(--bg-hover); }
+        .field { color: var(--blue); font-weight: 600; font-family: monospace; }
+        .type { color: var(--purple); font-family: monospace; font-size: 0.75rem; }
+        .pk, .fk { padding: 2px 5px; border-radius: 3px; font-size: 0.6rem; font-weight: 700; margin-left: 4px; }
+        .pk { background: var(--accent); color: white; }
+        .fk { background: var(--blue); color: white; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .tab {
+            padding: 0.6rem 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            transition: all 0.3s;
+        }
+        .tab:hover { border-color: var(--accent); color: var(--accent); }
+        .tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* API Endpoints */
+        .endpoint-group { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1rem; overflow: hidden; }
+        .endpoint-hdr {
+            padding: 1rem 1.25rem;
+            background: var(--bg-hover);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        .endpoint-hdr:hover { background: rgba(255,107,53,0.1); }
+        .endpoint-title { font-weight: 700; display: flex; align-items: center; gap: 0.75rem; }
+        .endpoint-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .endpoint-toggle { width: 20px; height: 20px; transition: transform 0.3s; }
+        .endpoint-group.open .endpoint-toggle { transform: rotate(180deg); }
+        .endpoint-content { max-height: 0; overflow: hidden; transition: max-height 0.4s; }
+        .endpoint-group.open .endpoint-content { max-height: 3000px; }
+        .endpoint { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+        .endpoint:last-child { border-bottom: none; }
+        .endpoint-line { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+        .method { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+        .method.get { background: var(--success); }
+        .method.post { background: var(--blue); }
+        .method.put { background: var(--warning); }
+        .method.patch { background: var(--purple); }
+        .method.delete { background: var(--danger); }
+        .endpoint-path { font-family: monospace; font-size: 0.85rem; }
+        .endpoint-desc { color: var(--text-dim); font-size: 0.8rem; }
+
+        /* Code Block */
+        .code {
+            background: #1a1a25;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            overflow-x: auto;
+            margin-top: 0.75rem;
+        }
+        .code-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; font-weight: 600; }
+        .json-key { color: var(--blue); }
+        .json-str { color: var(--success); }
+        .json-num { color: var(--accent); }
+        .json-bool { color: var(--purple); }
+
+        /* Flow */
+        .flow { display: flex; flex-direction: column; gap: 0.5rem; }
+        .flow-step { display: flex; align-items: center; gap: 1rem; }
+        .flow-num { width: 36px; height: 36px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        .flow-box { flex: 1; background: var(--bg-hover); padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid var(--accent); }
+        .flow-title { font-weight: 600; font-size: 0.9rem; }
+        .flow-desc { color: var(--text-dim); font-size: 0.8rem; }
+
+        /* Status */
+        .status { display: inline-flex; align-items: center; padding: 0.35rem 0.75rem; border-radius: 15px; font-size: 0.75rem; font-weight: 600; }
+        .status.req { background: rgba(243,156,18,0.2); color: var(--warning); }
+        .status.assign { background: rgba(78,205,196,0.2); color: var(--blue); }
+        .status.route { background: rgba(123,104,238,0.2); color: var(--purple); }
+        .status.deliv { background: rgba(46,204,113,0.2); color: var(--success); }
+        .status.comp { background: rgba(255,107,53,0.2); color: var(--accent); }
+
+        /* Screen Cards */
+        .screen { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .screen-hdr { background: var(--accent); padding: 0.75rem; text-align: center; font-weight: 600; font-size: 0.9rem; }
+        .screen-body { padding: 1rem; }
+        .screen-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; color: var(--text-dim); }
+        .screen-item:last-child { border-bottom: none; }
+        .screen-icon { width: 22px; height: 22px; background: var(--bg-hover); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; }
+
+        /* Timeline */
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+        .tl-item { position: relative; padding-bottom: 1.5rem; }
+        .tl-item::before { content: ''; position: absolute; left: -2rem; top: 4px; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; border: 3px solid var(--bg-dark); }
+        .tl-phase { font-size: 0.7rem; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .tl-title { font-size: 1rem; font-weight: 700; margin: 0.25rem 0; }
+        .tl-content { color: var(--text-dim); font-size: 0.85rem; }
+        .tl-duration { display: inline-block; margin-top: 0.5rem; padding: 0.25rem 0.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; font-size: 0.7rem; color: var(--text-muted); }
+
+        /* Risk Table */
+        .risk { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+        .risk.high { background: rgba(231,76,60,0.2); color: var(--danger); }
+        .risk.med { background: rgba(243,156,18,0.2); color: var(--warning); }
+        .risk.low { background: rgba(46,204,113,0.2); color: var(--success); }
+
+        /* Future Cards */
+        .future-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; position: relative; overflow: hidden; }
+        .future-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent); }
+        .future-phase { display: inline-block; padding: 0.25rem 0.5rem; background: rgba(255,107,53,0.1); color: var(--accent); border-radius: 4px; font-size: 0.7rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .future-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
+        .future-list { list-style: none; }
+        .future-list li { padding: 0.35rem 0; padding-left: 1.25rem; position: relative; color: var(--text-dim); font-size: 0.85rem; }
+        .future-list li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+
+        /* Footer */
+        .footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 3rem 2rem; margin-top: 3rem; }
+        .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+        .footer-logo { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+        .footer-info { color: var(--text-muted); font-size: 0.8rem; }
+        .footer-ver { background: var(--bg-dark); padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.75rem; color: var(--text-dim); }
+
+        /* Utilities */
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 2.5rem 0; }
+        .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.6s; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        .mt-1 { margin-top: 1rem; }
+        .mt-2 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .text-accent { color: var(--accent); }
+        .text-blue { color: var(--blue); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .stats { gap: 1.5rem; }
+            .stat-val { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">TRANSIT</div>
+            <ul class="nav-links">
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#database">Database</a></li>
+                <li><a href="#api">API</a></li>
+                <li><a href="#logic">Logic</a></li>
+                <li><a href="#frontend">Frontend</a></li>
+                <li><a href="#build">Build Plan</a></li>
+                <li><a href="#future">Future</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="logo">TRANSIT</div>
+        <p class="tagline">Digital Logistics Marketplace</p>
+        <p class="hero-desc">
+            Complete technical specification for Tanzania's premier two-sided logistics platform, 
+            connecting cargo owners with truck operators. MVP-ready architecture for rapid development.
+        </p>
+        <div class="stats">
+            <div class="stat"><div class="stat-val">3</div><div class="stat-lbl">User Roles</div></div>
+            <div class="stat"><div class="stat-val">47</div><div class="stat-lbl">API Endpoints</div></div>
+            <div class="stat"><div class="stat-val">12</div><div class="stat-lbl">DB Tables</div></div>
+            <div class="stat"><div class="stat-val">8</div><div class="stat-lbl">Weeks MVP</div></div>
+        </div>
+    </section>
+
+    <!-- Section 1: Architecture -->
+    <section class="section" id="architecture">
+        <div class="section-hdr fade-in">
+            <div class="section-num">01 / System Architecture</div>
+            <h2 class="section-title">High-Level Architecture</h2>
+            <p class="section-sub">Microservices-inspired modular design with clear service boundaries</p>
+        </div>
+
+        <div class="arch-container fade-in">
+            <div class="arch-layer">
+                <div class="arch-label">Clients</div>
+                <div class="arch-box client">📱 Cargo Owner<br><small>React Native</small></div>
+                <div class="arch-box client">🚛 Driver App<br><small>React Native</small></div>
+                <div class="arch-box client">💻 Admin Panel<br><small>Next.js</small></div>
+            </div>
+            <div class="arch-connector"></div>
+            <div class="arch-layer">
+                <div class="arch-label">Gateway</div>
+                <div class="arch-box api">🔐 API Gateway<br><small>Kong / ALB</small></div>
+                <div class="arch-box api">🌐 WebSocket<br><small>Real-time</small></div>
+            </div>
+            <div class="arch-connector"></div>
+            <div class="arch-layer">
+                <div class="arch-label">Services</div>
+                <div class="arch-box service">🔑 Auth</div>
+                <div class="arch-box service">📦 Booking</div>
+                <div class="arch-box service">🚚 Fleet</div>
+                <div class="arch-box service">💰 Payment</div>
+                <div class="arch-box service">📍 Tracking</div>
+                <div class="arch-box service">📊 Analytics</div>
+            </div>
+            <div class="arch-connector"></div>
+            <div class="arch-layer">
+                <div class="arch-label">Data</div>
+                <div class="arch-box data">🐘 PostgreSQL</div>
+                <div class="arch-box data">⚡ Redis</div>
+                <div class="arch-box data">📁 S3</div>
+            </div>
+            <div class="arch-connector"></div>
+            <div class="arch-layer">
+                <div class="arch-label">External</div>
+                <div class="arch-box external">💳 Selcom Pay</div>
+                <div class="arch-box external">🗺️ Google Maps</div>
+                <div class="arch-box external">📨 Africa's Talking</div>
+                <div class="arch-box external">🛡️ Insurance API</div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="grid-3 fade-in">
+            <div class="card">
+                <div class="card-hdr"><div class="card-icon">🔑</div><h3 class="card-title">Auth Service</h3></div>
+                <ul style="margin-left:1.25rem;color:var(--text-dim);font-size:0.85rem;">
+                    <li>User registration & OTP</li>
+                    <li>JWT token management</li>
+                    <li>Role-based access control</li>
+                    <li>Session via Redis</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-hdr"><div class="card-icon">📦</div><h3 class="card-title">Booking Service</h3></div>
+                <ul style="margin-left:1.25rem;color:var(--text-dim);font-size:0.85rem;">
+                    <li>Booking CRUD operations</li>
+                    <li>Rate calculation engine</li>
+                    <li>Status management</li>
+                    <li>POD handling</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-hdr"><div class="card-icon">🚚</div><h3 class="card-title">Fleet Service</h3></div>
+                <ul style="margin-left:1.25rem;color:var(--text-dim);font-size:0.85rem;">
+                    <li>Truck & driver registry</li>
+                    <li>Document verification</li>
+                    <li>Availability management</li>
+                    <li>Performance tracking</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-hdr"><div class="card-icon">💰</div><h3 class="card-title">Payment Service</h3></div>
+                <ul style="margin-left:1.25rem;color:var(--text-dim);font-size:0.85rem;">
+                    <li>Selcom integration</li>
+                    <li>Escrow management</li>
+                    <li>Commission split</li>
+                    <li>Payout processing</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-hdr"><div class="card-icon">📍</div><h3 class="card-title">Tracking Service</h3></div>
+                <ul style="margin-left:1.25rem;color:var(--text-dim);font-size:0.85rem;">
+                    <li>Real-time GPS updates</li>
+                    <li>ETA calculations</li>
+                    <li>Geofencing alerts</li>
+                    <li>Trip history logging</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-hdr"><div class="card-icon">📊</div><h3 class="card-title">Analytics Service</h3></div>
+                <ul style="margin-left:1.25rem;color:var(--text-dim);font-size:0.85rem;">
+                    <li>Dashboard metrics</li>
+                    <li>Report generation</li>
+                    <li>KPI tracking</li>
+                    <li>Data export</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Database -->
+    <section class="section section-alt" id="database">
+        <div class="section-hdr fade-in">
+            <div class="section-num">02 / Database Design</div>
+            <h2 class="section-title">Entity Relationship Model</h2>
+            <p class="section-sub">PostgreSQL schema with comprehensive relationships</p>
+        </div>
+
+        <div class="tabs fade-in">
+            <div class="tab active" data-tab="users">Users</div>
+            <div class="tab" data-tab="trucks">Trucks</div>
+            <div class="tab" data-tab="bookings">Bookings</div>
+            <div class="tab" data-tab="payments">Payments</div>
+        </div>
+
+        <div class="tab-content active" id="tab-users">
+            <div class="card fade-in">
+                <h3 class="text-accent mb-1">users</h3>
+                <div class="tbl-wrap">
+                    <table>
+                        <tr><th>Field</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+                        <tr><td><span class="field">id</span><span class="pk">PK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>Unique identifier</td></tr>
+                        <tr><td><span class="field">phone</span></td><td><span class="type">VARCHAR(20)</span></td><td>NOT NULL, UNIQUE</td><td>Primary phone (+255...)</td></tr>
+                        <tr><td><span class="field">email</span></td><td><span class="type">VARCHAR(255)</span></td><td>UNIQUE, nullable</td><td>Email address</td></tr>
+                        <tr><td><span class="field">password_hash</span></td><td><span class="type">VARCHAR(255)</span></td><td>NOT NULL</td><td>Bcrypt hashed</td></tr>
+                        <tr><td><span class="field">role</span></td><td><span class="type">ENUM</span></td><td>NOT NULL</td><td>'cargo_owner', 'driver', 'admin'</td></tr>
+                        <tr><td><span class="field">first_name</span></td><td><span class="type">VARCHAR(100)</span></td><td>NOT NULL</td><td>First name</td></tr>
+                        <tr><td><span class="field">last_name</span></td><td><span class="type">VARCHAR(100)</span></td><td>NOT NULL</td><td>Last name</td></tr>
+                        <tr><td><span class="field">account_type</span></td><td><span class="type">ENUM</span></td><td>DEFAULT 'individual'</td><td>'individual', 'corporate'</td></tr>
+                        <tr><td><span class="field">company_id</span><span class="fk">FK</span></td><td><span class="type">UUID</span></td><td>nullable</td><td>→ companies.id</td></tr>
+                        <tr><td><span class="field">is_verified</span></td><td><span class="type">BOOLEAN</span></td><td>DEFAULT false</td><td>OTP verified</td></tr>
+                        <tr><td><span class="field">created_at</span></td><td><span class="type">TIMESTAMP</span></td><td>DEFAULT NOW()</td><td>Creation time</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-trucks">
+            <div class="card fade-in">
+                <h3 class="text-accent mb-1">trucks</h3>
+                <div class="tbl-wrap">
+                    <table>
+                        <tr><th>Field</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+                        <tr><td><span class="field">id</span><span class="pk">PK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>Unique identifier</td></tr>
+                        <tr><td><span class="field">owner_id</span><span class="fk">FK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>→ users.id</td></tr>
+                        <tr><td><span class="field">plate_number</span></td><td><span class="type">VARCHAR(20)</span></td><td>NOT NULL, UNIQUE</td><td>Vehicle reg</td></tr>
+                        <tr><td><span class="field">truck_type</span></td><td><span class="type">ENUM</span></td><td>NOT NULL</td><td>'pickup', 'fuso', 'semi', 'trailer'</td></tr>
+                        <tr><td><span class="field">load_capacity_kg</span></td><td><span class="type">INTEGER</span></td><td>NOT NULL</td><td>Max load kg</td></tr>
+                        <tr><td><span class="field">status</span></td><td><span class="type">ENUM</span></td><td>DEFAULT 'pending'</td><td>'pending', 'verified', 'rejected'</td></tr>
+                        <tr><td><span class="field">availability</span></td><td><span class="type">ENUM</span></td><td>DEFAULT 'offline'</td><td>'available', 'en_route', 'offline'</td></tr>
+                        <tr><td><span class="field">current_lat</span></td><td><span class="type">DECIMAL(10,8)</span></td><td>nullable</td><td>GPS latitude</td></tr>
+                        <tr><td><span class="field">current_lng</span></td><td><span class="type">DECIMAL(11,8)</span></td><td>nullable</td><td>GPS longitude</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-bookings">
+            <div class="card fade-in">
+                <h3 class="text-accent mb-1">bookings</h3>
+                <div class="tbl-wrap">
+                    <table>
+                        <tr><th>Field</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+                        <tr><td><span class="field">id</span><span class="pk">PK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>Unique identifier</td></tr>
+                        <tr><td><span class="field">booking_number</span></td><td><span class="type">VARCHAR(20)</span></td><td>UNIQUE</td><td>TRN-XXXXXX</td></tr>
+                        <tr><td><span class="field">cargo_owner_id</span><span class="fk">FK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>→ users.id</td></tr>
+                        <tr><td><span class="field">truck_id</span><span class="fk">FK</span></td><td><span class="type">UUID</span></td><td>nullable</td><td>→ trucks.id</td></tr>
+                        <tr><td><span class="field">cargo_type</span></td><td><span class="type">ENUM</span></td><td>NOT NULL</td><td>'general', 'perishable', 'fragile', 'high_value'</td></tr>
+                        <tr><td><span class="field">weight_kg</span></td><td><span class="type">DECIMAL(10,2)</span></td><td>NOT NULL</td><td>Cargo weight</td></tr>
+                        <tr><td><span class="field">pickup_address</span></td><td><span class="type">TEXT</span></td><td>NOT NULL</td><td>Pickup location</td></tr>
+                        <tr><td><span class="field">pickup_lat</span></td><td><span class="type">DECIMAL(10,8)</span></td><td>NOT NULL</td><td>Pickup GPS</td></tr>
+                        <tr><td><span class="field">dropoff_address</span></td><td><span class="type">TEXT</span></td><td>NOT NULL</td><td>Delivery location</td></tr>
+                        <tr><td><span class="field">distance_km</span></td><td><span class="type">DECIMAL(10,2)</span></td><td>NOT NULL</td><td>Route distance</td></tr>
+                        <tr><td><span class="field">status</span></td><td><span class="type">ENUM</span></td><td>DEFAULT 'requested'</td><td>'requested', 'assigned', 'en_route', 'delivered', 'completed'</td></tr>
+                        <tr><td><span class="field">quoted_price</span></td><td><span class="type">DECIMAL(15,2)</span></td><td>NOT NULL</td><td>Total price TZS</td></tr>
+                        <tr><td><span class="field">platform_fee</span></td><td><span class="type">DECIMAL(15,2)</span></td><td>NOT NULL</td><td>Commission</td></tr>
+                        <tr><td><span class="field">driver_payout</span></td><td><span class="type">DECIMAL(15,2)</span></td><td>NOT NULL</td><td>Driver earnings</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-payments">
+            <div class="card fade-in">
+                <h3 class="text-accent mb-1">payments</h3>
+                <div class="tbl-wrap">
+                    <table>
+                        <tr><th>Field</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+                        <tr><td><span class="field">id</span><span class="pk">PK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>Unique identifier</td></tr>
+                        <tr><td><span class="field">booking_id</span><span class="fk">FK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>→ bookings.id</td></tr>
+                        <tr><td><span class="field">transaction_ref</span></td><td><span class="type">VARCHAR(100)</span></td><td>UNIQUE</td><td>Selcom reference</td></tr>
+                        <tr><td><span class="field">amount</span></td><td><span class="type">DECIMAL(15,2)</span></td><td>NOT NULL</td><td>Amount TZS</td></tr>
+                        <tr><td><span class="field">payment_method</span></td><td><span class="type">ENUM</span></td><td>NOT NULL</td><td>'mobile_money', 'bank', 'card'</td></tr>
+                        <tr><td><span class="field">provider</span></td><td><span class="type">VARCHAR(50)</span></td><td>nullable</td><td>M-Pesa, Tigo Pesa</td></tr>
+                        <tr><td><span class="field">status</span></td><td><span class="type">ENUM</span></td><td>DEFAULT 'pending'</td><td>'pending', 'completed', 'failed'</td></tr>
+                    </table>
+                </div>
+                <h3 class="text-accent mb-1 mt-2">escrow_ledger</h3>
+                <div class="tbl-wrap">
+                    <table>
+                        <tr><th>Field</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+                        <tr><td><span class="field">id</span><span class="pk">PK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>Unique identifier</td></tr>
+                        <tr><td><span class="field">booking_id</span><span class="fk">FK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>→ bookings.id</td></tr>
+                        <tr><td><span class="field">payment_id</span><span class="fk">FK</span></td><td><span class="type">UUID</span></td><td>NOT NULL</td><td>→ payments.id</td></tr>
+                        <tr><td><span class="field">total_amount</span></td><td><span class="type">DECIMAL(15,2)</span></td><td>NOT NULL</td><td>Funds held</td></tr>
+                        <tr><td><span class="field">status</span></td><td><span class="type">ENUM</span></td><td>DEFAULT 'held'</td><td>'held', 'released', 'disputed'</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: API -->
+    <section class="section" id="api">
+        <div class="section-hdr fade-in">
+            <div class="section-num">03 / API Specification</div>
+            <h2 class="section-title">RESTful API Endpoints</h2>
+            <p class="section-sub">Complete API specification with request/response examples</p>
+        </div>
+
+        <div class="endpoint-group fade-in" id="auth-ep">
+            <div class="endpoint-hdr" onclick="toggleEP('auth-ep')">
+                <div class="endpoint-title"><div class="endpoint-icon">🔐</div>Authentication</div>
+                <svg class="endpoint-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="endpoint-content">
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method post">POST</span><code class="endpoint-path">/api/v1/auth/register</code></div>
+                    <p class="endpoint-desc">Register new user with phone verification</p>
+                    <div class="code-label">Request</div>
+                    <div class="code">{ <span class="json-key">"phone"</span>: <span class="json-str">"+255712345678"</span>, <span class="json-key">"password"</span>: <span class="json-str">"SecureP@ss"</span>, <span class="json-key">"role"</span>: <span class="json-str">"cargo_owner"</span> }</div>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method post">POST</span><code class="endpoint-path">/api/v1/auth/verify-otp</code></div>
+                    <p class="endpoint-desc">Verify phone with OTP code</p>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method post">POST</span><code class="endpoint-path">/api/v1/auth/login</code></div>
+                    <p class="endpoint-desc">Login with phone/password</p>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method post">POST</span><code class="endpoint-path">/api/v1/auth/refresh</code></div>
+                    <p class="endpoint-desc">Refresh access token</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-group fade-in" id="booking-ep">
+            <div class="endpoint-hdr" onclick="toggleEP('booking-ep')">
+                <div class="endpoint-title"><div class="endpoint-icon">📦</div>Bookings</div>
+                <svg class="endpoint-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="endpoint-content">
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method post">POST</span><code class="endpoint-path">/api/v1/bookings</code></div>
+                    <p class="endpoint-desc">Create transport booking</p>
+                    <div class="code-label">Request</div>
+                    <div class="code">{ <span class="json-key">"cargo_type"</span>: <span class="json-str">"general"</span>, <span class="json-key">"weight_kg"</span>: <span class="json-num">5000</span>, <span class="json-key">"pickup"</span>: { <span class="json-key">"lat"</span>: <span class="json-num">-6.82</span>, <span class="json-key">"lng"</span>: <span class="json-num">39.27</span> }, <span class="json-key">"dropoff"</span>: { <span class="json-key">"lat"</span>: <span class="json-num">-3.38</span>, <span class="json-key">"lng"</span>: <span class="json-num">36.68</span> } }</div>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method get">GET</span><code class="endpoint-path">/api/v1/bookings</code></div>
+                    <p class="endpoint-desc">List bookings with filters</p>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method get">GET</span><code class="endpoint-path">/api/v1/bookings/{id}</code></div>
+                    <p class="endpoint-desc">Get booking details</p>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method get">GET</span><code class="endpoint-path">/api/v1/bookings/estimate</code></div>
+                    <p class="endpoint-desc">Get price estimate</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-group fade-in" id="driver-ep">
+            <div class="endpoint-hdr" onclick="toggleEP('driver-ep')">
+                <div class="endpoint-title"><div class="endpoint-icon">🚛</div>Driver Operations</div>
+                <svg class="endpoint-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="endpoint-content">
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method get">GET</span><code class="endpoint-path">/api/v1/driver/jobs</code></div>
+                    <p class="endpoint-desc">Get assigned jobs</p>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method post">POST</span><code class="endpoint-path">/api/v1/driver/jobs/{id}/accept</code></div>
+                    <p class="endpoint-desc">Accept job assignment</p>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method patch">PATCH</span><code class="endpoint-path">/api/v1/driver/jobs/{id}/status</code></div>
+                    <p class="endpoint-desc">Update job status</p>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method get">GET</span><code class="endpoint-path">/api/v1/driver/earnings</code></div>
+                    <p class="endpoint-desc">View earnings</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-group fade-in" id="tracking-ep">
+            <div class="endpoint-hdr" onclick="toggleEP('tracking-ep')">
+                <div class="endpoint-title"><div class="endpoint-icon">📍</div>Tracking</div>
+                <svg class="endpoint-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="endpoint-content">
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method post">POST</span><code class="endpoint-path">/api/v1/tracking/location</code></div>
+                    <p class="endpoint-desc">Submit GPS location</p>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method get">GET</span><code class="endpoint-path">/api/v1/tracking/bookings/{id}/live</code></div>
+                    <p class="endpoint-desc">Get live truck location</p>
+                </div>
+                <div class="endpoint" style="background:rgba(123,104,238,0.1);">
+                    <div class="endpoint-line"><span class="method" style="background:var(--purple)">WS</span><code class="endpoint-path">wss://api.transit.co.tz/ws/tracking/{booking_id}</code></div>
+                    <p class="endpoint-desc">WebSocket for real-time updates</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="endpoint-group fade-in" id="payment-ep">
+            <div class="endpoint-hdr" onclick="toggleEP('payment-ep')">
+                <div class="endpoint-title"><div class="endpoint-icon">💳</div>Payments</div>
+                <svg class="endpoint-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="endpoint-content">
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method post">POST</span><code class="endpoint-path">/api/v1/payments/initiate</code></div>
+                    <p class="endpoint-desc">Initiate payment via Selcom</p>
+                    <div class="code-label">Request</div>
+                    <div class="code">{ <span class="json-key">"booking_id"</span>: <span class="json-str">"uuid"</span>, <span class="json-key">"payment_method"</span>: <span class="json-str">"mobile_money"</span>, <span class="json-key">"provider"</span>: <span class="json-str">"mpesa"</span> }</div>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method post">POST</span><code class="endpoint-path">/api/v1/payments/callback</code></div>
+                    <p class="endpoint-desc">Selcom webhook callback</p>
+                </div>
+                <div class="endpoint">
+                    <div class="endpoint-line"><span class="method get">GET</span><code class="endpoint-path">/api/v1/payments/{id}/receipt</code></div>
+                    <p class="endpoint-desc">Get payment receipt</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Business Logic -->
+    <section class="section section-alt" id="logic">
+        <div class="section-hdr fade-in">
+            <div class="section-num">04 / Business Logic</div>
+            <h2 class="section-title">Core Business Rules</h2>
+            <p class="section-sub">Rate calculation, escrow workflow, and status management</p>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <div class="card">
+                <div class="card-hdr"><div class="card-icon">🧮</div><h3 class="card-title">Rate Calculation</h3></div>
+                <div class="code" style="margin-top:1rem;">
+<span style="color:#6a9955">// Formula</span>
+total = base_rate                <span style="color:#6a9955">// TZS 50,000</span>
+      + (distance_km × per_km)   <span style="color:#6a9955">// TZS 1,000/km</span>
+      + (weight_kg × per_kg)     <span style="color:#6a9955">// TZS 20/kg if >1000kg</span>
+      × cargo_multiplier         <span style="color:#6a9955">// 1.0-1.25</span>
+      + handling_fee             <span style="color:#6a9955">// if special req</span>
+
+platform_fee = total × 15%
+driver_payout = total - platform_fee
+                </div>
+                <div class="grid-4 mt-1">
+                    <div style="background:var(--bg-hover);padding:0.5rem;border-radius:6px;text-align:center;">
+                        <div style="font-size:0.65rem;color:var(--text-muted);">BASE</div>
+                        <div style="font-weight:700;color:var(--accent);">50K</div>
+                    </div>
+                    <div style="background:var(--bg-hover);padding:0.5rem;border-radius:6px;text-align:center;">
+                        <div style="font-size:0.65rem;color:var(--text-muted);">PER KM</div>
+                        <div style="font-weight:700;color:var(--accent);">1K</div>
+                    </div>
+                    <div style="background:var(--bg-hover);padding:0.5rem;border-radius:6px;text-align:center;">
+                        <div style="font-size:0.65rem;color:var(--text-muted);">PER KG</div>
+                        <div style="font-weight:700;color:var(--accent);">20</div>
+                    </div>
+                    <div style="background:var(--bg-hover);padding:0.5rem;border-radius:6px;text-align:center;">
+                        <div style="font-size:0.65rem;color:var(--text-muted);">FEE</div>
+                        <div style="font-weight:700;color:var(--accent);">15%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-hdr"><div class="card-icon">🔒</div><h3 class="card-title">Escrow Workflow</h3></div>
+                <div class="flow mt-1">
+                    <div class="flow-step"><div class="flow-num">1</div><div class="flow-box"><div class="flow-title">Payment</div><div class="flow-desc">Full amount collected → Escrow HELD</div></div></div>
+                    <div class="flow-step"><div class="flow-num">2</div><div class="flow-box"><div class="flow-title">Assignment</div><div class="flow-desc">Admin assigns truck → Trip starts</div></div></div>
+                    <div class="flow-step"><div class="flow-num">3</div><div class="flow-box"><div class="flow-title">Delivery</div><div class="flow-desc">POD submitted → Status DELIVERED</div></div></div>
+                    <div class="flow-step"><div class="flow-num">4</div><div class="flow-box"><div class="flow-title">Release</div><div class="flow-desc">24h hold → Payout to driver</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card fade-in mt-2">
+            <div class="card-hdr"><div class="card-icon">🔄</div><h3 class="card-title">Status Transitions</h3></div>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;justify-content:center;margin:1rem 0;">
+                <span class="status req">⏳ REQUESTED</span>
+                <span style="color:var(--text-muted)">→</span>
+                <span class="status assign">✓ ASSIGNED</span>
+                <span style="color:var(--text-muted)">→</span>
+                <span class="status route">🚛 EN_ROUTE</span>
+                <span style="color:var(--text-muted)">→</span>
+                <span class="status deliv">📦 DELIVERED</span>
+                <span style="color:var(--text-muted)">→</span>
+                <span class="status comp">✅ COMPLETED</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Frontend -->
+    <section class="section" id="frontend">
+        <div class="section-hdr fade-in">
+            <div class="section-num">05 / Frontend Structure</div>
+            <h2 class="section-title">Mobile & Web UI</h2>
+            <p class="section-sub">Screen flows for all user roles</p>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <div>
+                <h4 class="text-accent mb-1">📱 Cargo Owner App</h4>
+                <div class="screen">
+                    <div class="screen-hdr">Booking Flow</div>
+                    <div class="screen-body">
+                        <div class="screen-item"><div class="screen-icon">1</div>Splash & Login</div>
+                        <div class="screen-item"><div class="screen-icon">📍</div>Pickup Location (Map)</div>
+                        <div class="screen-item"><div class="screen-icon">🎯</div>Drop-off Location</div>
+                        <div class="screen-item"><div class="screen-icon">📦</div>Cargo Details</div>
+                        <div class="screen-item"><div class="screen-icon">💰</div>Price Quote</div>
+                        <div class="screen-item"><div class="screen-icon">💳</div>Payment</div>
+                        <div class="screen-item"><div class="screen-icon">🗺️</div>Live Tracking</div>
+                        <div class="screen-item"><div class="screen-icon">⭐</div>Rate Driver</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-accent mb-1">🚛 Driver App</h4>
+                <div class="screen">
+                    <div class="screen-hdr">Job Management</div>
+                    <div class="screen-body">
+                        <div class="screen-item"><div class="screen-icon">1</div>Registration + Docs</div>
+                        <div class="screen-item"><div class="screen-icon">🔔</div>Job Notification</div>
+                        <div class="screen-item"><div class="screen-icon">📋</div>Job Details</div>
+                        <div class="screen-item"><div class="screen-icon">✓</div>Accept Job</div>
+                        <div class="screen-item"><div class="screen-icon">🧭</div>Navigation</div>
+                        <div class="screen-item"><div class="screen-icon">📸</div>POD Capture</div>
+                        <div class="screen-item"><div class="screen-icon">💵</div>Earnings</div>
+                        <div class="screen-item"><div class="screen-icon">🔧</div>Availability</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="text-blue mt-2 mb-1 fade-in">💻 Admin Dashboard Modules</h4>
+        <div class="grid-3 fade-in">
+            <div class="card"><div class="card-hdr"><div class="card-icon">📊</div><h3 class="card-title">Dashboard</h3></div><p style="color:var(--text-dim);font-size:0.85rem;">KPIs, Live Fleet Map, Alerts</p></div>
+            <div class="card"><div class="card-hdr"><div class="card-icon">📦</div><h3 class="card-title">Bookings</h3></div><p style="color:var(--text-dim);font-size:0.85rem;">Assignment Panel, Progress View</p></div>
+            <div class="card"><div class="card-hdr"><div class="card-icon">🚚</div><h3 class="card-title">Fleet</h3></div><p style="color:var(--text-dim);font-size:0.85rem;">Truck Registry, Verification</p></div>
+            <div class="card"><div class="card-hdr"><div class="card-icon">💰</div><h3 class="card-title">Finance</h3></div><p style="color:var(--text-dim);font-size:0.85rem;">Payments, Escrow, Payouts</p></div>
+            <div class="card"><div class="card-hdr"><div class="card-icon">⚙️</div><h3 class="card-title">Config</h3></div><p style="color:var(--text-dim);font-size:0.85rem;">Rate Cards, Users, Roles</p></div>
+            <div class="card"><div class="card-hdr"><div class="card-icon">📈</div><h3 class="card-title">Reports</h3></div><p style="color:var(--text-dim);font-size:0.85rem;">Analytics, Export PDF/Excel</p></div>
+        </div>
+    </section>
+
+    <!-- Section 6: Build Plan -->
+    <section class="section section-alt" id="build">
+        <div class="section-hdr fade-in">
+            <div class="section-num">06 / MVP Build Plan</div>
+            <h2 class="section-title">Development Roadmap</h2>
+            <p class="section-sub">8-week sprint plan with milestones</p>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <div>
+                <h4 class="text-accent mb-1">Development Phases</h4>
+                <div class="timeline">
+                    <div class="tl-item">
+                        <div class="tl-phase">Week 1-2</div>
+                        <div class="tl-title">Foundation & Auth</div>
+                        <div class="tl-content">Database, JWT auth, OTP, User flows</div>
+                        <span class="tl-duration">Sprint 1</span>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-phase">Week 3-4</div>
+                        <div class="tl-title">Booking & Fleet</div>
+                        <div class="tl-content">Booking CRUD, Rate engine, Truck registry</div>
+                        <span class="tl-duration">Sprint 2</span>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-phase">Week 5-6</div>
+                        <div class="tl-title">Payments & Tracking</div>
+                        <div class="tl-content">Selcom, Escrow, GPS tracking, WebSocket</div>
+                        <span class="tl-duration">Sprint 3</span>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-phase">Week 7-8</div>
+                        <div class="tl-title">Apps & Testing</div>
+                        <div class="tl-content">Mobile apps, Admin panel, UAT, Launch</div>
+                        <span class="tl-duration">Sprint 4</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-accent mb-1">Risks & Mitigations</h4>
+                <div class="tbl-wrap">
+                    <table>
+                        <tr><th>Risk</th><th>Level</th><th>Mitigation</th></tr>
+                        <tr><td>Selcom integration delays</td><td><span class="risk high">High</span></td><td>Start early, mock system ready</td></tr>
+                        <tr><td>Low driver adoption</td><td><span class="risk med">Med</span></td><td>Simple onboarding, Swahili UI</td></tr>
+                        <tr><td>GPS accuracy issues</td><td><span class="risk med">Med</span></td><td>Manual location fallback</td></tr>
+                        <tr><td>Network connectivity</td><td><span class="risk high">High</span></td><td>Offline-first, SMS fallback</td></tr>
+                        <tr><td>Payment disputes</td><td><span class="risk med">Med</span></td><td>Mandatory POD, 24h escrow</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 7: Future -->
+    <section class="section" id="future">
+        <div class="section-hdr fade-in">
+            <div class="section-num">07 / Future Extensions</div>
+            <h2 class="section-title">Beyond MVP</h2>
+            <p class="section-sub">Strategic features for East Africa expansion</p>
+        </div>
+
+        <div class="grid-3 fade-in">
+            <div class="future-card">
+                <span class="future-phase">Phase 2 - Q2 2025</span>
+                <h3 class="future-title">🤖 AI Matching</h3>
+                <ul class="future-list">
+                    <li>ML truck recommendation</li>
+                    <li>Route optimization</li>
+                    <li>Demand prediction</li>
+                    <li>Dynamic pricing</li>
+                </ul>
+            </div>
+            <div class="future-card">
+                <span class="future-phase">Phase 2 - Q2 2025</span>
+                <h3 class="future-title">🏢 Corporate</h3>
+                <ul class="future-list">
+                    <li>Credit billing accounts</li>
+                    <li>Monthly invoicing</li>
+                    <li>Multi-user orgs</li>
+                    <li>Bulk booking upload</li>
+                </ul>
+            </div>
+            <div class="future-card">
+                <span class="future-phase">Phase 3 - Q4 2025</span>
+                <h3 class="future-title">🌍 Regional</h3>
+                <ul class="future-list">
+                    <li>Kenya launch</li>
+                    <li>Uganda & Rwanda</li>
+                    <li>Multi-currency</li>
+                    <li>Cross-border docs</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div>
+                <div class="footer-logo">TRANSIT</div>
+                <p class="footer-info">Digital Logistics Marketplace MVP</p>
+            </div>
+            <div class="footer-ver"><strong>v1.0</strong> | Jan 2025 | Britech Solutions LTD</div>
+        </div>
+    </footer>
+
+    <script>
+        // Nav visibility
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('visible', window.pageYOffset > 100);
+        });
+
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Endpoint toggle
+        function toggleEP(id) {
+            document.getElementById(id).classList.toggle('open');
+        }
+
+        // Fade in on scroll
+        const fadeEls = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+        fadeEls.forEach(el => observer.observe(el));
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
