@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trans-IT | Tanzania's Smart Digital Logistics Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #004990;
+            --teal-dark: #0a3640;
+            --teal-light: rgba(15, 76, 92, 0.1);
+            --orange: #f3c108;
+            --orange-dark: #f3c108;
+            --orange-light: rgba(244, 162, 97, 0.15);
+            --charcoal: #1F2933;
+            --charcoal-light: #323f4b;
+            --gray-light: #F3F4F6;
+            --gray: #6B7280;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white);
+            color: var(--charcoal);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--charcoal);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--orange);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--charcoal);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--orange);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--orange);
+        }
+
+        .nav-cta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: var(--charcoal);
+        }
+
+        .btn-primary:hover {
+            background: var(--orange-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(244, 162, 97, 0.4);
+        }
+
+        .btn-teal {
+            background: var(--teal);
+            color: var(--white);
+        }
+
+        .btn-teal:hover {
+            background: var(--teal-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(15, 76, 92, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--teal);
+            border: 2px solid var(--teal);
+        }
+
+        .btn-outline:hover {
+            background: var(--teal);
+            color: var(--white);
+        }
+
+        .btn-outline-orange {
+            background: transparent;
+            color: var(--orange);
+            border: 2px solid var(--orange);
+        }
+
+        .btn-outline-orange:hover {
+            background: var(--orange);
+            color: var(--charcoal);
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--white);
+        }
+
+        .mobile-menu-btn svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            background: linear-gradient(135deg, var(--charcoal) 0%, var(--charcoal-light) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 0 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -15%;
+            width: 60%;
+            height: 140%;
+            background: radial-gradient(ellipse, rgba(15, 76, 92, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -10%;
+            width: 50%;
+            height: 80%;
+            background: radial-gradient(ellipse, rgba(244, 162, 97, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(244, 162, 97, 0.15);
+            border: 1px solid rgba(244, 162, 97, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--orange);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .hero-badge svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.15;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .highlight {
+            color: var(--orange);
+        }
+
+        .hero-tagline {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .hero-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.65);
+            margin-bottom: 2rem;
+            max-width: 540px;
+            line-height: 1.8;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-apps {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-apps span {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .app-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .app-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--orange);
+        }
+
+        .app-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .app-btn-text {
+            text-align: left;
+        }
+
+        .app-btn-text span {
+            display: block;
+            font-size: 0.6rem;
+            opacity: 0.7;
+        }
+
+        .app-btn-text strong {
+            font-size: 0.8rem;
+        }
+
+        .hero-visual {
+            position: relative;
+        }
+
+        .hero-dashboard {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-header {
+            background: var(--teal);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dashboard-title {
+            color: var(--white);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .dashboard-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dashboard-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .dashboard-dot.active {
+            background: var(--orange);
+        }
+
+        .dashboard-body {
+            padding: 1.5rem;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--gray-light);
+            border-radius: 12px;
+            padding: 1rem;
+            border-left: 4px solid var(--teal);
+        }
+
+        .stat-card:nth-child(2) {
+            border-left-color: var(--orange);
+        }
+
+        .stat-card-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--charcoal);
+        }
+
+        .dashboard-map {
+            background: linear-gradient(135deg, #e8f0f2 0%, #fef6ed 100%);
+            border-radius: 12px;
+            height: 130px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-route {
+            position: absolute;
+            width: 70%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--orange));
+            top: 50%;
+            left: 15%;
+            border-radius: 2px;
+        }
+
+        .map-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .map-dot.start { 
+            left: 15%; 
+            top: calc(50% - 8px); 
+            background: var(--teal);
+        }
+        
+        .map-dot.end { 
+            right: 15%; 
+            top: calc(50% - 8px); 
+            background: var(--orange);
+        }
+        
+        .map-dot.truck { 
+            left: 45%; 
+            top: calc(50% - 8px); 
+            background: var(--charcoal);
+            animation: moveTruck 4s ease-in-out infinite;
+        }
+
+        @keyframes moveTruck {
+            0%, 100% { left: 25%; }
+            50% { left: 60%; }
+        }
+
+        .floating-card {
+            position: absolute;
+            background: var(--white);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid var(--gray-light);
+        }
+
+        .floating-card.card-1 {
+            top: -15px;
+            right: -25px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .floating-card.card-2 {
+            bottom: 60px;
+            left: -35px;
+            animation: float 4s ease-in-out infinite 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .floating-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-icon.teal { background: var(--teal-light); color: var(--teal); }
+        .floating-icon.orange { background: var(--orange-light); color: var(--orange); }
+
+        .floating-icon svg { width: 24px; height: 24px; }
+
+        .floating-text { font-size: 0.85rem; font-weight: 700; color: var(--charcoal); }
+        .floating-sub { font-size: 0.7rem; color: var(--gray); }
+
+        /* ===== PROBLEM SECTION ===== */
+        .problem {
+            padding: 6rem 0;
+            background: var(--gray-light);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background: var(--teal-light);
+            color: var(--teal);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .section-tag.orange {
+            background: var(--orange-light);
+            color: var(--orange-dark);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--charcoal);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .section-title.white {
+            color: var(--white);
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+
+        .section-description.light {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .problem-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.75rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .problem-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(53, 167, 220, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #004990;
+        }
+
+        .problem-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .problem-card p {
+            color: var(--charcoal);
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .solution-box {
+            background: var(--teal);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .solution-box p {
+            color: var(--white);
+            font-size: 1.15rem;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .solution-box strong {
+            color: var(--orange);
+        }
+
+        /* ===== HOW IT WORKS ===== */
+        .how-it-works {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+        }
+
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-card::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            right: -50%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--orange));
+            opacity: 0.3;
+        }
+
+        .step-card:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-card:nth-child(odd) .step-number {
+            background: var(--teal);
+            color: var(--white);
+            box-shadow: 0 8px 25px rgba(15, 76, 92, 0.35);
+        }
+
+        .step-card:nth-child(even) .step-number {
+            background: var(--orange);
+            color: var(--charcoal);
+            box-shadow: 0 8px 25px rgba(244, 162, 97, 0.35);
+        }
+
+        .step-number span {
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+
+        .step-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 0.75rem;
+        }
+
+        .step-card p {
+            color: var(--gray);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* ===== USER SECTIONS ===== */
+        .for-cargo-owners {
+            padding: 6rem 0;
+            background: var(--teal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .for-cargo-owners::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40%;
+            height: 100%;
+            background: radial-gradient(ellipse at right, rgba(244, 162, 97, 0.15) 0%, transparent 70%);
+        }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-content h2 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .user-content .subtitle {
+            font-size: 1.25rem;
+            color: var(--orange);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .user-content p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .user-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-list span {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--white);
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--white);
+            font-size: 0.95rem;
+        }
+
+        .features-list li svg {
+            width: 20px;
+            height: 20px;
+            color: var(--orange);
+            flex-shrink: 0;
+        }
+
+        .user-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .user-visual {
+            display: flex;
+            justify-content: center;
+        }
+
+        .phone-mockup {
+            background: var(--charcoal);
+            border-radius: 36px;
+            padding: 12px;
+            width: 280px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .phone-screen {
+            background: var(--white);
+            border-radius: 28px;
+            overflow: hidden;
+            height: 500px;
+        }
+
+        .phone-header {
+            background: var(--teal);
+            padding: 1.5rem 1rem 1rem;
+            color: var(--white);
+        }
+
+        .phone-greeting {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        .phone-name {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .phone-body {
+            padding: 1rem;
+            background: var(--gray-light);
+            height: calc(100% - 80px);
+        }
+
+        .phone-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--teal);
+        }
+
+        .phone-card:nth-child(2) {
+            border-left-color: var(--orange);
+        }
+
+        .phone-card-title {
+            font-size: 0.65rem;
+            color: var(--gray);
+            text-transform: uppercase;
+        }
+
+        .phone-card-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--charcoal);
+        }
+
+        /* For Truck Owners */
+        .for-truck-owners {
+            padding: 6rem 0;
+            background: var(--charcoal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .for-truck-owners::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 100%;
+            background: radial-gradient(ellipse at left, rgba(15, 76, 92, 0.2) 0%, transparent 70%);
+        }
+
+        .for-truck-owners .user-content h2 {
+            color: var(--white);
+        }
+
+        .for-truck-owners .user-content .subtitle {
+            color: var(--orange);
+        }
+
+        .for-truck-owners .user-content p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .for-truck-owners .features-list li {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .for-truck-owners .phone-header {
+            background: var(--orange);
+            color: var(--charcoal);
+        }
+
+        .for-truck-owners .phone-card {
+            border-left-color: var(--orange);
+        }
+
+        .for-truck-owners .phone-card:nth-child(2) {
+            border-left-color: var(--teal);
+        }
+
+        /* ===== PLATFORM FEATURES ===== */
+        .platform-features {
+            padding: 6rem 0;
+            background: var(--gray-light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(-6px);
+        }
+
+        .feature-card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .feature-card:nth-child(odd) .feature-card-icon {
+            background: var(--teal-light);
+            color: var(--teal);
+        }
+
+        .feature-card:nth-child(even) .feature-card-icon {
+            background: var(--orange-light);
+            color: var(--orange);
+        }
+
+        .feature-card-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .feature-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .feature-card ul li {
+            font-size: 0.85rem;
+            color: var(--gray);
+            padding: 0.35rem 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .feature-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* ===== INSURANCE SECTION ===== */
+        .insurance {
+            padding: 6rem 0;
+            background: var(--white);
+        }
+
+        .insurance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .insurance-content h2 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--charcoal);
+            margin-bottom: 1rem;
+        }
+
+        .insurance-content p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .insurance-benefits {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .insurance-benefit {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--gray-light);
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .insurance-benefit svg {
+            width: 24px;
+            height: 24px;
+            color: var(--teal);
+            flex-shrink: 0;
+        }
+
+        .insurance-benefit span {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--charcoal);
+        }
+
+        .insurance-outcomes {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .insurance-outcome {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--charcoal);
+            font-weight: 500;
+        }
+
+        .insurance-outcome svg {
+            width: 20px;
+            height: 20px;
+            color: var(--orange);
+        }
+
+        .insurance-visual {
+            background: linear-gradient(145deg, var(--teal), var(--teal-dark));
+            border-radius: 24px;
+            padding: 3rem;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .insurance-visual-icon {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .insurance-visual-icon svg {
+            width: 50px;
+            height: 50px;
+            color: var(--orange);
+        }
+
+        .insurance-visual h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .insurance-visual p {
+            opacity: 0.8;
+            line-height: 1.7;
+        }
+
+        /* ===== COMPARISON TABLE ===== */
+        .comparison {
+            padding: 6rem 0;
+            background: var(--charcoal);
+        }
+
+        .comparison-table {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.25rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .comparison-table th {
+            background: var(--teal);
+            color: var(--white);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .comparison-table th:last-child {
+            background: var(--orange);
+            color: var(--charcoal);
+        }
+
+        .comparison-table td {
+            font-size: 0.9rem;
+            color: var(--charcoal);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover td {
+            background: var(--gray-light);
+        }
+
+        .check {
+            color: var(--teal);
+            font-weight: 700;
+        }
+
+        .cross {
+            color: #dc3545;
+        }
+
+        /* ===== REGIONS ===== */
+        .regions {
+            padding: 6rem 0;
+            background: var(--gray-light);
+        }
+
+        .regions-grid {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .region-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem 3rem;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .region-card:hover {
+            border-color: var(--teal);
+            transform: translateY(-4px);
+        }
+
+        .region-card.active {
+            border-color: var(--orange);
+            box-shadow: 0 10px 30px rgba(244, 162, 97, 0.2);
+        }
+
+        .region-card h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--charcoal);
+        }
+
+        .region-card.active h4 {
+            color: var(--teal);
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(ellipse, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+        }
+
+        .cta-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-content h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--charcoal);
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .cta-apps {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .cta-app-btn {
+            background: var(--charcoal);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .cta-app-btn:hover {
+            background: var(--teal);
+            transform: translateY(-2px);
+        }
+
+        .cta-app-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--charcoal);
+            padding: 5rem 0 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-brand p {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: var(--charcoal);
+        }
+
+        .social-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .footer-column h4 {
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-column a {
+            display: block;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: var(--orange);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-bottom p {
+            font-size: 0.875rem;
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-legal a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .footer-legal a:hover {
+            color: var(--orange);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-description {
+                margin: 0 auto 2rem;
+            }
+
+            .hero-cta {
+                justify-content: center;
+            }
+
+            .hero-apps {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                max-width: 450px;
+                margin: 2rem auto 0;
+            }
+
+            .problems-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .step-card::after {
+                display: none;
+            }
+
+            .user-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .user-list {
+                justify-content: center;
+            }
+
+            .features-list {
+                display: inline-block;
+                text-align: left;
+            }
+
+            .user-cta {
+                justify-content: center;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .insurance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links, .nav-cta {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.25rem;
+            }
+
+            .problems-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .insurance-benefits {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table {
+                overflow-x: auto;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-apps {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 01-2 2h-1"/></svg>
+                </div>
+                <span class="logo-text">TRANS-<span>IT</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#cargo-owners">For Shippers</a>
+                <a href="#truck-owners">For Drivers</a>
+                <a href="#features">Features</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="nav-cta">
+                <a href="#" class="btn btn-ghost">Login</a>
+                <a href="#contact" class="btn btn-primary">Book a Truck</a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 01-2 2h-1"/></svg>
+                        Smart Digital Logistics
+                    </div>
+                    <h1>Tanzania's <span class="highlight">Smart Digital</span> Logistics Platform for Truck Booking & Cargo Transport</h1>
+                    <p class="hero-tagline">On-demand trucking services. Real-time cargo tracking. Secure escrow payments. Integrated cargo insurance.</p>
+                    <p class="hero-description">Trans-IT is a leading digital logistics platform in Tanzania, connecting cargo owners and truck operators through a secure, transparent, and scalable freight marketplace across East Africa.</p>
+                    <div class="hero-cta">
+                        <a href="#contact" class="btn btn-primary btn-large">
+                            Book a Truck Now
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                        </a>
+                        <a href="#truck-owners" class="btn btn-teal btn-large">Register Your Truck</a>
+                    </div>
+                    <div class="hero-apps">
+                        <span>Download the App:</span>
+                        <a href="#" class="app-btn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 010 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+                            <div class="app-btn-text"><span>Get it on</span><strong>Google Play</strong></div>
+                        </a>
+                        <a href="#" class="app-btn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                            <div class="app-btn-text"><span>Download on</span><strong>App Store</strong></div>
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-dashboard">
+                        <div class="dashboard-header">
+                            <span class="dashboard-title">Trans-IT Dashboard</span>
+                            <div class="dashboard-dots">
+                                <span class="dashboard-dot active"></span>
+                                <span class="dashboard-dot"></span>
+                                <span class="dashboard-dot"></span>
+                            </div>
+                        </div>
+                        <div class="dashboard-body">
+                            <div class="dashboard-stats">
+                                <div class="stat-card">
+                                    <div class="stat-card-label">Active Shipments</div>
+                                    <div class="stat-card-value">24</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-label">Available Trucks</div>
+                                    <div class="stat-card-value">156</div>
+                                </div>
+                            </div>
+                            <div class="dashboard-map">
+                                <div class="map-route"></div>
+                                <div class="map-dot start"></div>
+                                <div class="map-dot truck"></div>
+                                <div class="map-dot end"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="floating-card card-1">
+                        <div class="floating-icon orange">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                        </div>
+                        <div>
+                            <div class="floating-text">Delivered!</div>
+                            <div class="floating-sub">Payment Released</div>
+                        </div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <div class="floating-icon teal">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 018 8c0 5.4-8 12-8 12S4 15.4 4 10a8 8 0 018-8z"/></svg>
+                        </div>
+                        <div>
+                            <div class="floating-text">Live Tracking</div>
+                            <div class="floating-sub">DSM → Arusha</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem" id="problem">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">The Challenge</span>
+                <h2 class="section-title">The Problem with Traditional Logistics in Tanzania</h2>
+                <p class="section-description">The logistics and trucking industry in Tanzania remains fragmented and largely informal.</p>
+            </div>
+            <div class="problems-grid">
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    </div>
+                    <p>Cargo owners struggle to find reliable trucks quickly</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20m5-17H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                    </div>
+                    <p>Freight pricing is inconsistent and manually negotiated</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <p>Limited visibility once goods are in transit</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </div>
+                    <p>Truck owners face idle time and unpredictable income</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    </div>
+                    <p>Payment disputes delay cash flow for transporters</p>
+                </div>
+            </div>
+            <div class="solution-box">
+                <p><strong>Trans-IT</strong> modernizes cargo transport in Tanzania by digitizing the entire freight booking workflow — from <strong>truck matching</strong> to <strong>proof of delivery</strong> and <strong>automated payout</strong>.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag orange">How It Works</span>
+                <h2 class="section-title">Simple Digital Truck Booking</h2>
+                <p class="section-description">From request to delivery in 5 seamless steps</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number"><span>1</span></div>
+                    <h4>Request a Truck</h4>
+                    <p>Enter pickup & delivery location, cargo type, weight, and service category</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number"><span>2</span></div>
+                    <h4>Get Instant Quote</h4>
+                    <p>Automated Rate Card calculates price based on distance, cargo, weight, and route</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number"><span>3</span></div>
+                    <h4>Secure Payment</h4>
+                    <p>Transport fees held in escrow until delivery is verified</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number"><span>4</span></div>
+                    <h4>Track Live</h4>
+                    <p>Real-time GPS tracking across Tanzania's key trade corridors</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number"><span>5</span></div>
+                    <h4>Auto Payout</h4>
+                    <p>Proof of delivery triggers automatic payment release</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Cargo Owners -->
+    <section class="for-cargo-owners" id="cargo-owners">
+        <div class="container">
+            <div class="user-grid">
+                <div class="user-content">
+                    <span class="section-tag" style="background: rgba(255,255,255,0.15); color: var(--white);">For Shippers</span>
+                    <h2>For Cargo Owners in Tanzania & East Africa</h2>
+                    <p class="subtitle">Reliable On-Demand Trucking Services</p>
+                    <p>No long-term contracts required. Trans-IT supports businesses of all sizes across multiple industries.</p>
+                    <div class="user-list">
+                        <span>Manufacturers</span>
+                        <span>Wholesalers</span>
+                        <span>SMEs</span>
+                        <span>Exporters</span>
+                        <span>Construction</span>
+                        <span>Event Logistics</span>
+                    </div>
+                    <ul class="features-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Instant truck booking (Web & Mobile App)</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Automated freight pricing</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Live cargo tracking dashboard</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Digital proof of delivery</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Optional per-trip cargo insurance</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Corporate billing options</li>
+                    </ul>
+                    <div class="user-cta">
+                        <a href="#contact" class="btn btn-primary btn-large">Start Shipping Today</a>
+                        <a href="#" class="btn btn-outline-orange btn-large">Download App</a>
+                    </div>
+                </div>
+                <div class="user-visual">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="phone-header">
+                                <div class="phone-greeting">Welcome Back 👋</div>
+                                <div class="phone-name">Amina Juma</div>
+                            </div>
+                            <div class="phone-body">
+                                <div class="phone-card">
+                                    <div class="phone-card-title">Active Shipment</div>
+                                    <div class="phone-card-value" style="color: var(--teal);">DSM → Mwanza</div>
+                                </div>
+                                <div class="phone-card">
+                                    <div class="phone-card-title">ETA</div>
+                                    <div class="phone-card-value">4h 32m</div>
+                                </div>
+                                <div class="phone-card">
+                                    <div class="phone-card-title">Total Shipments</div>
+                                    <div class="phone-card-value">47</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Truck Owners -->
+    <section class="for-truck-owners" id="truck-owners">
+        <div class="container">
+            <div class="user-grid" style="direction: rtl;">
+                <div class="user-content" style="direction: ltr;">
+                    <span class="section-tag orange">For Drivers</span>
+                    <h2>For Truck Owners & Fleet Operators</h2>
+                    <p class="subtitle">Turn Idle Trucks into Consistent Revenue</p>
+                    <p>Trans-IT helps independent truck owners and fleet managers access verified freight demand across Tanzania.</p>
+                    <ul class="features-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Easy digital registration</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Real-time job notifications</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Transparent earnings tracking</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Escrow-protected payments</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Insurance verification integration</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Performance ratings to build credibility</li>
+                    </ul>
+                    <p style="font-style: italic; margin-bottom: 1.5rem;">Manage availability. Accept jobs. Deliver cargo. Get paid automatically.</p>
+                    <div class="user-cta">
+                        <a href="#contact" class="btn btn-primary btn-large">Join as Truck Partner</a>
+                        <a href="#" class="btn btn-teal btn-large">Download Driver App</a>
+                    </div>
+                </div>
+                <div class="user-visual" style="direction: ltr;">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="phone-header">
+                                <div class="phone-greeting">Good Morning </div>
+                                <div class="phone-name">Driver: Dismas M.</div>
+                            </div>
+                            <div class="phone-body">
+                                <div class="phone-card">
+                                    <div class="phone-card-title">New Job Available</div>
+                                    <div class="phone-card-value" style="color: var(--orange);">Arusha → Dodoma</div>
+                                </div>
+                                <div class="phone-card">
+                                    <div class="phone-card-title">Earnings Today</div>
+                                    <div class="phone-card-value">TZS 450,000</div>
+                                </div>
+                                <div class="phone-card">
+                                    <div class="phone-card-title">Rating</div>
+                                    <div class="phone-card-value">⭐ 4.9</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Features -->
+    <section class="platform-features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Platform Features</span>
+                <h2 class="section-title">Built for Transparency & Logistics Control</h2>
+                <p class="section-description">Trans-IT is more than a freight marketplace — it's a structured Transport Management System (TMS) designed for Tanzania and East Africa.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    </div>
+                    <h4>Booking Control Center</h4>
+                    <p>Complete oversight of all transport requests with smart allocation.</p>
+                    <ul>
+                        <li>Real-time booking monitoring</li>
+                        <li>Manual override & reassignment</li>
+                        <li>Smart truck allocation by proximity</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 01-2 2h-1M6 19a2 2 0 100-4 2 2 0 000 4zm12 0a2 2 0 100-4 2 2 0 000 4z"/></svg>
+                    </div>
+                    <h4>Truck Pool Management</h4>
+                    <p>Manage your entire fleet with performance insights.</p>
+                    <ul>
+                        <li>Live availability tracking</li>
+                        <li>Driver performance history</li>
+                        <li>Reliability ratings</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20m5-17H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                    </div>
+                    <h4>Automated Rate Card Engine</h4>
+                    <p>Eliminates inconsistent pricing and standardizes freight calculation for transparency.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+                    </div>
+                    <h4>Secure Payments Hub</h4>
+                    <p>Multiple payment options with escrow protection.</p>
+                    <ul>
+                        <li>M-Pesa, Tigo Pesa, Airtel Money</li>
+                        <li>Bank transfers & corporate invoicing</li>
+                        <li>Full transaction ledger</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+                    </div>
+                    <h4>Reports & Analytics Dashboard</h4>
+                    <p>Data-driven insights for better decision making.</p>
+                    <ul>
+                        <li>Trip completion metrics</li>
+                        <li>Revenue tracking</li>
+                        <li>Client satisfaction monitoring</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 018 8c0 5.4-8 12-8 12S4 15.4 4 10a8 8 0 018-8z"/></svg>
+                    </div>
+                    <h4>Real-Time GPS Tracking</h4>
+                    <p>Full visibility of all shipments across Tanzania's key trade corridors with live updates.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insurance Section -->
+    <section class="insurance" id="insurance">
+        <div class="container">
+            <div class="insurance-grid">
+                <div class="insurance-content">
+                    <span class="section-tag orange">Competitive Advantage</span>
+                    <h2>Integrated Cargo Insurance</h2>
+                    <p>Trans-IT integrates with insurance providers in Tanzania to offer comprehensive protection for every shipment.</p>
+                    <div class="insurance-benefits">
+                        <div class="insurance-benefit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span>Per-trip cargo insurance</span>
+                        </div>
+                        <div class="insurance-benefit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span>Fleet subscription coverage</span>
+                        </div>
+                        <div class="insurance-benefit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span>Real-time verification</span>
+                        </div>
+                        <div class="insurance-benefit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span>Digital policy certificates</span>
+                        </div>
+                    </div>
+                    <div class="insurance-outcomes">
+                        <div class="insurance-outcome">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                            <span>Cargo owners gain protection</span>
+                        </div>
+                        <div class="insurance-outcome">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                            <span>Transporters gain credibility</span>
+                        </div>
+                        <div class="insurance-outcome">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                            <span>Businesses reduce operational risk</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="insurance-visual">
+                    <div class="insurance-visual-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3>Claims-Ready Documentation</h3>
+                    <p>Every shipment includes comprehensive documentation for quick claims processing when needed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="comparison">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag" style="background: rgba(244, 162, 97, 0.2);">Why Trans-IT</span>
+                <h2 class="section-title white">Why Trans-IT is the Best Logistics Platform</h2>
+            </div>
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Traditional Brokers</th>
+                            <th>Trans-IT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Online Truck Booking</td>
+                            <td class="cross">❌</td>
+                            <td class="check">✅</td>
+                        </tr>
+                        <tr>
+                            <td>Automated Freight Pricing</td>
+                            <td class="cross">❌</td>
+                            <td class="check">✅</td>
+                        </tr>
+                        <tr>
+                            <td>Escrow Payment Protection</td>
+                            <td class="cross">❌</td>
+                            <td class="check">✅</td>
+                        </tr>
+                        <tr>
+                            <td>Live GPS Tracking</td>
+                            <td>Limited</td>
+                            <td class="check">✅</td>
+                        </tr>
+                        <tr>
+                            <td>Insurance Integration</td>
+                            <td>Manual</td>
+                            <td class="check">Digital</td>
+                        </tr>
+                        <tr>
+                            <td>Performance Analytics</td>
+                            <td class="cross">❌</td>
+                            <td class="check">✅</td>
+                        </tr>
+                        <tr>
+                            <td>Transparent Commission</td>
+                            <td class="cross">❌</td>
+                            <td class="check">✅</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Regions -->
+    <section class="regions">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Coverage</span>
+                <h2 class="section-title">Designed for East African Trade Corridors</h2>
+                <p class="section-description">Built to support regional trade, SME logistics growth, and digital freight exchange expansion.</p>
+            </div>
+            <div class="regions-grid">
+                <div class="region-card active">
+                    <h4>🇹🇿 Tanzania</h4>
+                </div>
+                <div class="region-card">
+                    <h4>🇰🇪 Kenya</h4>
+                </div>
+                <div class="region-card">
+                    <h4>🇺🇬 Uganda</h4>
+                </div>
+                <div class="region-card">
+                    <h4>🇷🇼 Rwanda</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <div class="cta-content">
+                <h2> Ready to Move Cargo Smarter?</h2>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-teal btn-large">Book a Delivery Now</a>
+                    <a href="#" class="btn btn-ghost btn-large" style="border-color: var(--charcoal); color: var(--charcoal);">Register Your Fleet</a>
+                    <a href="#" class="btn btn-outline btn-large" style="border-color: var(--charcoal); color: var(--charcoal);">Request Corporate Demo</a>
+                </div>
+                <p style="margin: 2rem 0 1rem; color: var(--charcoal); font-weight: 500;"> Download the Trans-IT App:</p>
+                <div class="cta-apps">
+                    <a href="#" class="cta-app-btn">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 010 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+                        Google Play
+                    </a>
+                    <a href="#" class="cta-app-btn">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                        App Store
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5a2 2 0 01-2 2h-1"/></svg>
+                        </div>
+                        <span class="logo-text">TRANS-<span>IT</span></span>
+                    </a>
+                    <p>Tanzania's leading digital logistics platform connecting cargo owners with verified truck operators for efficient, transparent, and secure transportation across East Africa.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Platform</h4>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#features">Features</a>
+                    <a href="#insurance">Insurance</a>
+                    <a href="#">Pricing</a>
+                </div>
+                <div class="footer-column">
+                    <h4>For Users</h4>
+                    <a href="#cargo-owners">Cargo Owners</a>
+                    <a href="#truck-owners">Truck Owners</a>
+                    <a href="#">Corporate Clients</a>
+                    <a href="#">Fleet Operators</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Careers</a>
+                    <a href="#contact">Contact</a>
+                    <a href="#">Blog</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Trans-IT. All rights reserved. Powered by Britech Solutions.</p>
+                <div class="footer-legal">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
